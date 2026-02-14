@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.router import router
-from app.db.mongodb import connect_db, close_database
+from app.core.config import settings
 
 app = FastAPI(
     title = "Forecash API",
@@ -10,12 +10,3 @@ app = FastAPI(
 
 #Routers 
 app.include_router(router, prefix="/api")
-
-#Eventos FastAPI
-@app.on_event("startup")
-def startup_event():
-    connect_db
-
-@app.on_event("shutdown")
-def shutdown_event():
-    close_database()
