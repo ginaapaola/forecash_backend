@@ -1,21 +1,29 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import router
-from app.db.mongodb import connect_db, close_database
 
+
+#DOCUMENTACIÓN SWAGGER
 app = FastAPI(
     title = "Forecash API",
     description = "API para análisis, predicción y reportes.",
     version = "1.0.0"
 )
 
+#CORS
+#origins = [
+#    "http://localhost:3000",
+#   "http://127.0.0.1:3000",
+#]
+
+"""app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credential=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+
+)"""
+
 #Routers 
 app.include_router(router, prefix="/api")
-
-#Eventos FastAPI
-@app.on_event("startup")
-def startup_event():
-    connect_db
-
-@app.on_event("shutdown")
-def shutdown_event():
-    close_database()
