@@ -13,11 +13,8 @@ router.include_router(auth_router)
 async def health_check():
     return {"status": "ok", "message": "Forecash is runing"}
 
-"""    
-@router.get("/profile")
-def get_profile(current_user: dict = Depends(get_current_user)):
-    return current_user
 
+"""
 @router.get("/admin/dashboard")
 def admin_dashboard(
     current_user: dict = Depends(role_required("super_admin"))
