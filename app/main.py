@@ -16,14 +16,13 @@ app = FastAPI(
 #   "http://127.0.0.1:3000",
 #]
 
-"""app.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credential=True,
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
-
-)"""
+    allow_headers=["*"],
+)
 
 #Routers 
 app.include_router(router, prefix="/api")

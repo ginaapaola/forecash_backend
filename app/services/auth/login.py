@@ -14,7 +14,7 @@ async def login(
         db: Session = Depends(get_db)
 ):
     #Buscar y validar que el usuario sí existe en la BD
-    user = db.query(User).filter(User.email == data.email).first()
+    user = db.query(User).filter(User.document_number == data.usuario).first()
 
     if not user: 
         raise HTTPException(
