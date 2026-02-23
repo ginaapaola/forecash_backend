@@ -22,7 +22,7 @@ async def token(
         "/login", 
         response_model=TokenResponse,
         responses= {
-            404: {"Error": "Not found"}
+            400: {"BAD REQUEST": "Invalid credentials"}
         }
         )
 async def authenticate_user(

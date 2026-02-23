@@ -1,4 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, String, Enum, func
+from sqlalchemy.orm import relationship
 from app.core.db.base import Base
 from app.models.user.user_role import UserRole
 
@@ -18,5 +19,7 @@ class User(Base):
     document_type = Column(String, nullable=False)
     document_number = Column(String, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    companies = relationship("UserCompany", back_populates="user")
 
 

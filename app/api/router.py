@@ -3,10 +3,12 @@ from app.dependencies.get_current_user import get_current_user
 from app.dependencies.get_rol import role_required
 
 from app.api.routes.auth import router as auth_router
+from app.api.routes.user import router as users_router
 
 router = APIRouter()
 
 router.include_router(auth_router)
+router.include_router(users_router)
 
 
 @router.get("/health")
