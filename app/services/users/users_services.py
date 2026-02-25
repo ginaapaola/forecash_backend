@@ -3,8 +3,8 @@ from sqlalchemy.orm import joinedload
 from app.models.user.user import User
 from app.models.user.user_role import UserRole
 from app.models.user_empresa import UserCompany
-from app.schemas.company_response import CompanyResponse
-from app.schemas.user_response import UserResponse
+from app.schemas.response_schema.company_response import CompanyResponse
+from app.schemas.response_schema.user_response import UserResponse
 
 class UsersService:
 

@@ -2,7 +2,8 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.schemas.company_response import CompanyResponse
+from app.schemas.response_schema.company_response import CompanyResponse
+
 
 
 class UserResponse(BaseModel):

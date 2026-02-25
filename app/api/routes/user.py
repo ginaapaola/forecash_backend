@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.db.session import get_db
 from app.dependencies.get_user import get_current_user_from_db
 from app.models.user.user import User
-from app.schemas.user_response import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse, UserResponse
+from app.schemas.response_schema.user_response import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse, UserResponse
 from app.services.users.users_services import UsersService
 
 
