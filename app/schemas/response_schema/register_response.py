@@ -3,13 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.models.request.register_request import RegisterRequest
-from app.schemas.request_schema.register_request import AditionalUser
+from app.schemas.request_schema.register_request import AditionalUser, RegisterRequest
 
 class RequestFileResponse(BaseModel):
     id: int
     file_name: str
-    file_type: str
     content_type: str
     created_at: datetime
 
@@ -18,8 +16,8 @@ class RequestFileResponse(BaseModel):
 
 class RegisterResponse(RegisterRequest):
     id: int
-    state: str
-    motivo_rechazo: Optional[str]
+    status: str
+    reason_for_rejection: Optional[str]
     created_at: datetime
 
     aditional_users: Optional[list[AditionalUser]] = []

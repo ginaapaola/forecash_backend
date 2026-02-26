@@ -18,7 +18,7 @@ class RequestFile(Base):
     
     #INFORMACIÓN DEL ARCHIVO (METADATOS)
     file_name = Column(String, nullable=False)
-    file_type = Column(String, nullable=False)
     content_type = Column(String, nullable=True)
+    size = Column(Integer, nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

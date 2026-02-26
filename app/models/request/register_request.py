@@ -17,19 +17,19 @@ class RegisterRequest(Base):
     #INFORMACIÓN DEL REPRESENTANTE
 
     rep_name = Column(String, nullable=False)
-    rep_email = Column(String, unique=True, nullable=False, index=True)
-    rep_phone = Column(String, unique=True, nullable=False)
+    rep_email = Column(String, nullable=False, index=True)
+    rep_phone = Column(String, nullable=False)
     rep_document_type = Column(
         Enum(UserDocType, name="document_type"),
         nullable=False
     )
-    rep_document_number = Column(String, unique=True, nullable=False)
+    rep_document_number = Column(String, nullable=False)
 
     # INFORMACIÓN DE LA EMPRESA 
 
     legal_name_company = Column(String, nullable=False)
     trade_name_company = Column(String, nullable=False)
-    nit_company = Column(String, unique=True, nullable=False, index=True)
+    nit_company = Column(String, nullable=False, index=True)
     economic_activity = Column(String, nullable=False)
     entity_type = Column(
         Enum(EntityType, name='entity_type'),

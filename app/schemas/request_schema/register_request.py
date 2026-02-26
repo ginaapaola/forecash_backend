@@ -28,4 +28,4 @@ class AditionalUser(BaseModel):
 
 
 class CompanyRequestCreate(RegisterRequest):
-    aditional_user: List[AditionalUser] = []
+    usuarios_json: List[AditionalUser] = []
