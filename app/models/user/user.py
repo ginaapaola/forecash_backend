@@ -13,7 +13,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(
         Enum(UserRole, name="user_role"),
-        nullable=False
+        nullable=True
     )
 
     phone = Column(String, unique=True, nullable=False)
