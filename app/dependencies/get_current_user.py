@@ -1,28 +1,21 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+from app.core.db.session import get_db
+from app.dependencies import get_token_payload
+from app.models.user.user import User
 
-from app.core.config import settings
+def get_current_user(
+    payload: dict = Depends(get_token_payload),
+    db: Session = Depends(get_db)
+):
+    user_id = payload.get("sub")
 
-security = HTTPBearer()
+    user = db.query(User).filter(User.id == user_id).first()
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token = credentials.credentials
-    
-    try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        user_id: str = payload.get("sub")
-        
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Credenciales inválidas",
-            )
-
-        return payload
-
-    except JWTError:
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido o expirado",
+            detail="Usuario no encontrado"
         )
+
+    return user
