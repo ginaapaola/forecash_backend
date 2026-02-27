@@ -1,6 +1,7 @@
 from sqlalchemy import Column, DateTime, Integer, String, Enum, func
 from sqlalchemy.orm import relationship
 from app.core.db.base import Base
+from app.models.user.doc_type import UserDocType
 from app.models.user.user_role import UserRole
 
 class User(Base):
@@ -16,8 +17,11 @@ class User(Base):
     )
 
     phone = Column(String, unique=True, nullable=False)
-    document_type = Column(String, nullable=False)
-    document_number = Column(String, nullable=False, index=True)
+    document_type = Column(
+        Enum(UserDocType, name="document_type"),
+        nullable=False
+    )
+    document_number = Column(String, unique=True, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     companies = relationship("UserCompany", back_populates="user")

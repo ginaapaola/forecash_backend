@@ -12,10 +12,7 @@ class Company(Base):
     legal_name = Column(String, nullable=False)
     trade_name = Column(String, nullable=False)
     nit = Column(String, unique=True, nullable=False, index=True)
-    economic_sector = Column(
-        Enum(EconomicSector, name='economic_sector'),
-        nullable=False
-    )
+    economic_sector = Column(String, default="Servicios")
     economic_activity = Column(String, nullable=False)
     entity_type = Column(
         Enum(EntityType, name='entity_type'),
