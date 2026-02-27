@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends
 from sqlalchemy.orm import Session
 
-from app.dependencies.get_current_user import get_current_user
-from app.schemas.auth import RefreshRequest, TokenResponse, LoginRequest
+from app.dependencies.get_token_payload import get_token_payload
 from app.core.db.session import get_db
+
+from app.schemas.request_schema.auth_request import LoginRequest, RefreshRequest
+from app.schemas.response_schema.auth import TokenResponse
 from app.services.auth.login import login
 from app.services.auth.refresh_token import refresh_token
 
@@ -30,7 +32,7 @@ async def authenticate_user(
         ...,
         examples=[
             {
-                "email": "username",
+                "usuario": "username",
                 "password": "userpassword"
             }
         ]
@@ -40,5 +42,5 @@ async def authenticate_user(
     return await login(login_request, db)
 
 @router.get("/profile")
-def get_profile(current_user: dict = Depends(get_current_user)):
+def get_profile(current_user: dict = Depends(get_token_payload)):
     return current_user

@@ -5,8 +5,9 @@ from app.core.security import create_access_token, create_refresh_token, hash_to
 from app.core.config import settings
 from app.models.refresh_token import RefreshToken
 from app.models.user.user import User
-from app.schemas.auth import LoginRequest
 from sqlalchemy.orm import Session
+
+from app.schemas.request_schema.auth_request import LoginRequest
 
 
 async def login(

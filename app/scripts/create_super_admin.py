@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from app.core.db.session import SessionLocal
 from app.core.config import settings
 from app.core.security import hash_password
-from app.models.user.user import User, UserRole
+from app.models.user.user import User, UserRole, UserDocType
+from app.models.user_empresa import UserCompany
 
 
 def create_super_admin(): 

@@ -4,9 +4,9 @@ from app.core.db.session import get_db
 from app.core.security import create_access_token, create_refresh_token, decode_refresh_token, hash_token
 from app.models.refresh_token import RefreshToken
 from app.models.user.user import User
-from app.schemas.auth import RefreshRequest
 from sqlalchemy.orm import Session
 from app.core.config import settings
+from app.schemas.request_schema.auth_request import RefreshRequest
 
 
 async def refresh_token(

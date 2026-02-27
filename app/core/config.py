@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     SUPERADMIN_DOC_TYPE: str
     SUPERADMIN_DOC_NUM: str
 
+    #FIREBASE
+    FIREBASE_CREDENTIALS_PATH: str
+    FIREBASE_STORAGE_BUCKET: str
+
     @property
     def DATABASE_URL(self) -> str:
         return (
