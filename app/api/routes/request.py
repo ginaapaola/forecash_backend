@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
-from app.dependencies.get_rol import role_required
+from app.dependencies.require_super_admin import require_super_admin
+from app.models.user.user import User
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.register_response import RegisterResponse
 from app.services.requests.requests_services import RequestsServices
@@ -65,7 +66,7 @@ def createRequest(
 )
 def get_request(
     request_id: int,
-    current_user: dict = Depends(role_required("super_admin")),
+    current_user: User = Depends(require_super_admin),
     db: Session = Depends(get_db)
 ):
     return RequestsServices.get_request_id(db, request_id)
@@ -81,7 +82,7 @@ def get_request(
     }
 )
 def get_requests(
-    current_user: dict = Depends(role_required("super_admin")),
+    current_user: User = Depends(require_super_admin),
     db: Session = Depends(get_db)
 ):
     return RequestsServices.get_all_requests(db)

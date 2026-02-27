@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.db.session import get_db
-from app.dependencies import get_token_payload
+from app.dependencies.get_token_payload import get_token_payload
 from app.models.user.user import User
 
 def get_current_user(

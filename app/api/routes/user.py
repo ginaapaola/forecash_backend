@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.db.session import get_db
-from app.dependencies.get_user import get_current_user_from_db
+from app.dependencies.get_current_user import get_current_user
 from app.models.user.user import User
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.user_response import UserResponse
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/users", tags=['Users'])
         }
         )
 def getUser(
-    current_user: User = Depends(get_current_user_from_db),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     return UsersService.get_user(db, current_user.id )
