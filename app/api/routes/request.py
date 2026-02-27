@@ -5,11 +5,14 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
+from app.dependencies.get_rol import role_required
+from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.register_response import RegisterResponse
 from app.services.requests.requests_services import RequestsServices
 
 router = APIRouter(prefix="/requests", tags=["Requests"])
 
+#ENDPOINT PARA LA CREACIÓN DE UNA NUEVA SOLICITUD DE REGISTRO
 @router.post(
     ("/"),
     response_model=RegisterResponse
@@ -49,3 +52,36 @@ def createRequest(
         data=data,
         files=files
     )
+
+#ENDPOINT PARA OBTENER UNA SOLICITUD POR SU ID
+@router.get(
+    "/{request_id}",
+    response_model=RegisterResponse,
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def get_request(
+    request_id: int,
+    current_user: dict = Depends(role_required("super_admin")),
+    db: Session = Depends(get_db)
+):
+    return RequestsServices.get_request_id(db, request_id)
+
+#ENDPOINT PARA OBTENER UNA LISTA DE SOLICITUDES
+@router.get(
+    "/",
+    response_model=List[RegisterResponse],
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def get_requests(
+    current_user: dict = Depends(role_required("super_admin")),
+    db: Session = Depends(get_db)
+):
+    return RequestsServices.get_all_requests(db)

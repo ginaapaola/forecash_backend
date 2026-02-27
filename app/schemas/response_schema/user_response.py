@@ -15,12 +15,3 @@ class UserResponse(BaseModel):
     document_type: str
     document_number: str
     companies: List[CompanyResponse]
-
-class NotFoundResponse(BaseModel):
-    message: str = "User hasn't been found"
-
-class ForbiddenResponse(BaseModel):
-    message: str = "You're not authenticated"
-
-class UnauthorizedResponse(BaseModel):
-    message: str = "You're not authorized for this action"

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -29,3 +29,8 @@ class AditionalUser(BaseModel):
 
 class CompanyRequestCreate(RegisterRequest):
     usuarios_json: List[AditionalUser] = []
+
+#ESQUEMA PARA ACTUALIZACIÓN DE REQUESTS
+class RegisterRequestUpdate(BaseModel):
+    status: Optional[str] = None
+    reason_for_rejection: Optional[str] = None

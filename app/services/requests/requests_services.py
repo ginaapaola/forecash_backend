@@ -1,15 +1,16 @@
 from typing import List
 import uuid
 
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile, status
 import json
 from sqlalchemy.orm import Session
 
 from app.core.firebase.firebase_config import bucket
+from app.models.company.company import Company
 from app.models.request.file import RequestFile
 from app.models.request.register_request import RegisterRequest
-from app.schemas.request_schema.register_request import CompanyRequestCreate
-
+from app.models.user.user import User
+from app.schemas.request_schema.register_request import CompanyRequestCreate, RegisterRequestUpdate
 
 class RequestsServices:
 
@@ -32,6 +33,13 @@ class RequestsServices:
                 data.get("usuarios_json", [])
             )
             validated_data = CompanyRequestCreate(**data)
+            
+            existing_company = db.query(Company).filter(Company.nit == validated_data.nit_company)
+            if existing_company:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="This Nit already exists for other company"
+                )
 
             request_dict = validated_data.model_dump()
 
@@ -87,4 +95,31 @@ class RequestsServices:
         except Exception as e:
             db.rollback()
             raise e
+    
+    @staticmethod
+    def get_request_id(db: Session, request_id): 
+        request = db.query(RegisterRequest).filter(RegisterRequest.id == request_id).first()
+        
+        if request is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Request not found"
+            )
+        
+        return request
+    
+    @staticmethod
+    def get_all_requests(db: Session):
+        requests= db.query(RegisterRequest)
 
+        if requests is None: 
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="There aren't requests yet."
+            )
+        
+        if requests.count == 0:
+            return "There aren't requests yet."
+        
+        return requests
+        
