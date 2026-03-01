@@ -18,7 +18,7 @@ router = APIRouter(prefix="/requests", tags=["Requests"])
     ("/"),
     response_model=RegisterResponse
 )
-def createRequest(
+def create_register_request(
     rep_name: str = Form(...),
     rep_email: str = Form(...),
     rep_phone: str = Form(...),

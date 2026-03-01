@@ -31,6 +31,20 @@ class Settings(BaseSettings):
     FIREBASE_CREDENTIALS_PATH: str
     FIREBASE_STORAGE_BUCKET: str
 
+    #FRONTEND URL
+    FRONTEND_URL: str
+
+    #VARIABLES EMAIL
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
+    USE_CREDENTIALS: bool
+    
+
     @property
     def DATABASE_URL(self) -> str:
         return (

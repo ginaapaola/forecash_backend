@@ -10,8 +10,8 @@ class UserCompany(Base):
     __tablename__ = "user_company"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    company_id = Column(Integer, ForeignKey('company.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    company_id = Column(Integer, ForeignKey('company.id', ondelete='CASCADE'), nullable=False)
     role = Column(
         Enum(CompanyRole, name="company_role"),
         nullable=False

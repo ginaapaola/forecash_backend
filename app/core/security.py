@@ -1,3 +1,6 @@
+import secrets
+import string
+
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
@@ -69,3 +72,39 @@ def decode_refresh_token(token: str) -> dict:
             status_code = status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token"
         )
+
+# FUNCIÓN PARA GENERAR UNA CONTRASEÑA SEGURA
+def generate_secure_pass(length: int = 8) -> str:
+
+    alphabet = string.ascii_letters + string.digits + "!@#$%&*"
+
+     # Garantizar al menos un carácter de cada tipo
+    password = [
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.digits),
+        secrets.choice("!@#$%&*"),
+    ]
+
+    # Completar el resto
+    password += [secrets.choice(alphabet) for _ in range(length - 4)]
+
+    secrets.SystemRandom().shuffle(password)
+
+    return "".join(password)
+
+# FUNCIÓN PARA GENERAR TOKENS DE ACTIVACIÓN DE CUENTA (Expira en 3 dias || 72 horas)
+
+def create_activation_token(user_id: int) -> str:
+    
+    payload = {
+        "sub": str(user_id),
+        "type": "activation",
+        "exp": datetime.utcnow() + timedelta(hours=72),
+    }
+
+    return jwt.encode(
+        payload,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM
+    )

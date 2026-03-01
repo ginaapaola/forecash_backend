@@ -20,4 +20,9 @@ class Company(Base):
     )
     is_legally_constituted = Column(Boolean, nullable=False)
 
-    users = relationship("UserCompany", back_populates="company")
+    users = relationship(
+        "UserCompany", 
+        back_populates="company",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
