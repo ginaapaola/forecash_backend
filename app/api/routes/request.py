@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 
 from sqlalchemy.orm import Session
 
@@ -105,3 +105,21 @@ def reject_request(
     current_user: User = Depends(require_super_admin),
 ):
     return RequestsServices.reject_request(db, request_id, data)
+
+@router.put(
+    "/approved/{request_id}",
+    description="Endpoint to approve request",
+    response_model=RegisterResponse,
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def approve_request(
+    request_id: int,
+    background_task: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_super_admin)
+):
+    return RequestsServices.approved_request(db, request_id, background_task)

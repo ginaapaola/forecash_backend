@@ -11,5 +11,5 @@ mail_config = ConnectionConfig(
     MAIL_SERVER=settings.MAIL_SERVER,
     MAIL_STARTTLS=settings.MAIL_STARTTLS,
     MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
-    USE_CREDENTIALS=settings.USE_CREDENTIALS
+    USE_CREDENTIALS=settings.USE_CREDENTIALS,
 )

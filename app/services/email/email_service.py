@@ -1,7 +1,7 @@
 from fastapi_mail import FastMail, MessageSchema, MessageType
 
 from app.core.config import settings
-from app.core.mail import mail_config
+from app.core.mail.mail_config import mail_config
 
 
 
@@ -38,7 +38,7 @@ class EmailService:
         message = MessageSchema(
             subject="Activación de cuenta",
             recipients=[to_email],
-            bodu=html_content,
+            body=html_content,
             subtype=MessageType.html
         )
 
