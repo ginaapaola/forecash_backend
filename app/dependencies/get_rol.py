@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from pytest import Session
+from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
 from app.dependencies.get_current_user import get_current_user

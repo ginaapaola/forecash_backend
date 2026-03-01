@@ -4,10 +4,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.db.session import get_db
 from app.dependencies.get_current_user import get_current_user
+from app.dependencies.get_rol import require_role
 from app.dependencies.require_super_admin import require_super_admin
 from app.models.user.user import User
+from app.models.user_company.company_role import CompanyRole
 from app.schemas.request_schema.auth_request import ChangePasswordRequest
-from app.schemas.request_schema.user_request import UserRequestUpdate
+from app.schemas.request_schema.user_request import CreateUserRequest, UserRequestUpdate
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.user_response import UserResponse
 from app.services.users.users_services import UsersService
