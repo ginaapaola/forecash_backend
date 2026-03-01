@@ -4,26 +4,16 @@ from app.core.config import settings
 
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=settings.MAIL_USERNAME,
-    MAIL_PASSWORD=settings.MAIL_PASSWORD,
-    MAIL_FROM=settings.MAIL_FROM,
-    MAIL_PORT=settings.MAIL_PORT,
-    MAIL_SERVER=settings.MAIL_SERVER,
-    MAIL_STARTTLS=settings.MAIL_STARTTLS,
-    MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
-    USE_CREDENTIALS=settings.USE_CREDENTIALS
-)
+from app.services.email.email_service import EmailService
+
 
 async def test():
-    message = MessageSchema(
-        subject="Correo de prueba",
-        recipients=["terryhurtado04@gmail.com"],
-        body="<h1>ESTE ES UN MENSAJE DE LA FLACA MÁS HERMOSA QUE CONOCES!</h1><p>Yo también te extraño, quiero verte y que me la metas toda hasta el fondo ❤️😔.</p>",
-        subtype=MessageType.html
+    await EmailService.send_activation_email(
+        "ginapao007@gmail.com",
+        "username",
+        "password",
+        "supon que este es tu token :p"
     )
-    fm = FastMail(conf)
-    await fm.send_message(message)
-    print("CORREO ENVIADO ¡SOS LA PUTA AMA!")
+    print("CORREO ENVIADOOO")
 
 asyncio.run(test())

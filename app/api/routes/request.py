@@ -1,12 +1,13 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
 from app.dependencies.require_super_admin import require_super_admin
 from app.models.user.user import User
+from app.schemas.request_schema.register_request import RegisterRequestUpdate
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.register_response import RegisterResponse
 from app.services.requests.requests_services import RequestsServices
@@ -86,3 +87,39 @@ def get_requests(
     db: Session = Depends(get_db)
 ):
     return RequestsServices.get_all_requests(db)
+
+@router.put(
+    "/reject/{request_id}",
+    description="Endpoint to reject request",
+    response_model=RegisterResponse,
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def reject_request(
+    request_id: int,
+    data: RegisterRequestUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_super_admin),
+):
+    return RequestsServices.reject_request(db, request_id, data)
+
+@router.put(
+    "/approved/{request_id}",
+    description="Endpoint to approve request",
+    response_model=RegisterResponse,
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def approve_request(
+    request_id: int,
+    background_task: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_super_admin)
+):
+    return RequestsServices.approved_request(db, request_id, background_task)
