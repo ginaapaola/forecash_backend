@@ -9,6 +9,7 @@ from app.core.firebase.firebase_config import bucket
 from app.models.company.company import Company
 from app.models.request.file import RequestFile
 from app.models.request.register_request import RegisterRequest
+from app.models.request.request_status import Status
 from app.models.user.user import User
 from app.schemas.request_schema.register_request import CompanyRequestCreate, RegisterRequestUpdate
 
@@ -33,14 +34,7 @@ class RequestsServices:
                 data.get("usuarios_json", [])
             )
             validated_data = CompanyRequestCreate(**data)
-            
-            existing_company = db.query(Company).filter(Company.nit == validated_data.nit_company)
-            if existing_company:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This Nit already exists for other company"
-                )
-
+                            
             request_dict = validated_data.model_dump()
 
             new_request = RegisterRequest(**request_dict)
@@ -122,4 +116,41 @@ class RequestsServices:
             return "There aren't requests yet."
         
         return requests
+    
+    @staticmethod
+    def reject_request(db: Session, request_id, data: RegisterRequestUpdate):
+
+        request = db.query(RegisterRequest).filter(RegisterRequest.id == request_id).first()
+
+        if request is None: 
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Request not found"
+            )
+        
+        company_exists = db.query(Company).filter(Company.nit == request.nit_company).first()
+
+        if company_exists: 
+            request.status = Status.REJECTED
+            request.reason_for_rejection = "Company's nit already exists."
+
+            db.commit()
+            db.refresh(request)
+        
+            return request
+        
+        request.status = data.status
+        request.reason_for_rejection = data.reason_for_rejection
+
+        db.commit()
+        db.refresh(request)
+
+        return request
+
+
+        
+
+    
+        
+        
         
