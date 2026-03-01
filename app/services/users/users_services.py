@@ -247,4 +247,31 @@ class UsersService:
             "password": generated_password,
             "activation_token": activation_token
         }
+    
+    @staticmethod
+    def deactivate_user(db: Session, user_id):
 
+        existing_user = db.query(User).filter(User.id == user_id).first()
+
+        if existing_user is None: 
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        if not existing_user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User isn't active"
+            )
+        
+        existing_user.is_active = False
+
+        db.commit()
+        db.refresh(existing_user)
+
+        return {
+            "message": "User has been deactivated successfully",
+            "user_id": existing_user.id,
+            "is_active": existing_user.is_active
+            }

@@ -78,3 +78,17 @@ def update_user(
     current_user: User = Depends(get_current_user)
 ):
     return UsersService.update_user(db, current_user.id, data)
+
+@router.patch(
+    "/deactivated/{user_id}",
+    description= "Endpoint to deactivated an User",
+    responses={
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def deactivated_user(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    return UsersService.deactivate_user(db, user_id)
