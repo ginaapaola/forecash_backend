@@ -19,7 +19,7 @@ from app.services.users.users_services import UsersService
 router = APIRouter(prefix="/users", tags=['Users'])
 
 @router.get(
-        "/user", 
+        "/profile", 
         response_model=UserResponse,
         responses={
             404: {"model": NotFoundResponse},
@@ -27,11 +27,27 @@ router = APIRouter(prefix="/users", tags=['Users'])
             401: {"model": UnauthorizedResponse}
         }
         )
-def get_user_by_id(
-    current_user: User = Depends(get_current_user),
+def get_user_profile(
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return UsersService.get_user(db, current_user.id )
+    return UsersService.get_user_profile(db, user.id)
+
+@router.get(
+        "/{user_id}",
+        response_model=UserResponse,
+        responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def get_user_id(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_super_admin),
+):
+    return UsersService.get_user_id(db, user_id)
 
 @router.get(
     "/",

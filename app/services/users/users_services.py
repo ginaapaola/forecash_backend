@@ -16,8 +16,8 @@ from app.schemas.response_schema.user_response import UserResponse
 class UsersService:
 
     @staticmethod
-    async def get_all_users(db:Session):
-        users = db.query(User)
+    def get_all_users(db:Session):
+        users = db.query(User).all()
 
         if users is None:
             raise HTTPException(
@@ -31,8 +31,8 @@ class UsersService:
         return users
     
     @staticmethod
-    def get_user_email(db:Session):
-        user = db.query(User).filter(User.email).first()
+    def get_user_id(db:Session, user_id):
+        user = db.query(User).filter(User.id == user_id).first()
 
         if user is None: 
             raise HTTPException(
@@ -42,7 +42,7 @@ class UsersService:
         return user
 
     @staticmethod
-    def get_user(db, user_id):
+    def get_user_profile(db, user_id):
         user = (
             db.query(User)
             .options(
