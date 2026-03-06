@@ -1,7 +1,6 @@
 from sqlalchemy import Boolean, Column, Enum, Integer, String
 from sqlalchemy.orm import relationship
 from app.core.db.base import Base
-from app.models.company.economic_sector import EconomicSector
 from app.models.company.entity_type import EntityType
 
 
@@ -20,9 +19,16 @@ class Company(Base):
     )
     is_legally_constituted = Column(Boolean, nullable=False)
 
-    users = relationship(
+    users_companies = relationship(
         "UserCompany", 
         back_populates="company",
         cascade="all, delete-orphan",
         passive_deletes=True
+    )
+
+    # Nueva relación directa a User (solo lectura)
+    users = relationship(
+        "User",
+        secondary="user_company",
+        viewonly=True
     )

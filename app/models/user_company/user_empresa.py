@@ -18,7 +18,7 @@ class UserCompany(Base):
     )
 
     user = relationship('User', back_populates = "companies")
-    company = relationship(Company, back_populates = "users")
+    company = relationship(Company, back_populates = "users_companies")
 
     __table_args__ = (
         UniqueConstraint('user_id', 'company_id', name = 'uq_user_empresa'),

@@ -3,6 +3,7 @@ import uuid
 
 from fastapi import BackgroundTasks, HTTPException, UploadFile, status
 import json
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app.core.security import create_activation_token, generate_secure_pass, hash_password
@@ -108,7 +109,7 @@ class RequestsServices:
     
     @staticmethod
     def get_all_requests(db: Session):
-        requests= db.query(RegisterRequest)
+        requests= db.query(RegisterRequest).order_by(desc(RegisterRequest.created_at)).all()
 
         if requests is None: 
             raise HTTPException(
@@ -230,14 +231,13 @@ class RequestsServices:
         # Enviar emails a todos los usuarios nuevos
         for u in created_users:
             background_task.add_task(
-                EmailService.send_activation_email(
+                EmailService.send_activation_email,
                     u["instance"].email,
                     u["instance"].document_number,
                     u["password"],
                     create_activation_token(u["instance"].id)
-                )
             )
-
+            print("correo enviado a:", u["instance"].email)
         return request
             
     

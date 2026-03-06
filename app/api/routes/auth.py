@@ -22,7 +22,6 @@ async def token(
 # LOGUEO 
 @router.post(
         "/login", 
-        response_model=TokenResponse,
         responses= {
             400: {"BAD REQUEST": "Invalid credentials"}
         }
