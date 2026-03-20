@@ -9,6 +9,7 @@ from app.models.user_company.company_role import CompanyRole
 from app.models.user_company.user_empresa import UserCompany
 from app.schemas.request_schema.auth_request import ChangePasswordRequest
 from app.schemas.request_schema.user_request import CreateUserRequest, UserRequestUpdate
+from app.schemas.response_schema.UserCompanyResponse import UserCompanyResponse
 from app.schemas.response_schema.company_response import CompanyResponse
 from app.schemas.response_schema.user_response import UserResponse
 
@@ -68,7 +69,9 @@ class UsersService:
             )
         
         empresas_response = [
-            CompanyResponse(
+        UserCompanyResponse(
+            role=relacion.role,
+            company=CompanyResponse(
                 id=relacion.company.id,
                 legal_name=relacion.company.legal_name,
                 trade_name=relacion.company.trade_name,
@@ -78,8 +81,9 @@ class UsersService:
                 entity_type=relacion.company.entity_type,
                 is_legally_constituted=relacion.company.is_legally_constituted
             )
-            for relacion in user.companies
-        ]
+        )
+        for relacion in user.companies
+    ]
 
         return UserResponse(
             id=user.id,

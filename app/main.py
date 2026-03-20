@@ -7,7 +7,9 @@ from app.api.router import router
 app = FastAPI(
     title = "Forecash API",
     description = "API para análisis, predicción y reportes.",
-    version = "1.0.0"
+    version = "1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 #CORS
