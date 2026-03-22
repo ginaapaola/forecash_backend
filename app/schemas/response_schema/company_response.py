@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -15,6 +15,9 @@ class CompanyResponse(BaseModel):
     economic_activity: str
     entity_type: str
     is_legally_constituted: bool
+    regime_type: Optional[str] = None
+    tax_rate: Optional[float] = None
+    is_vat_responsible: Optional[bool] = None
     users: List[UserBasicResponse] = []
 
     class Config:
