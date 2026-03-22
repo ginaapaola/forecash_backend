@@ -4,12 +4,14 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
+from app.dependencies.get_company import get_company
 from app.dependencies.get_current_user import get_current_user
 from app.dependencies.get_rol import require_role
 from app.dependencies.require_super_admin import require_super_admin
 from app.models.user.user import User
 from app.models.user_company.company_role import CompanyRole
 from app.schemas.request_schema.select_company import SelectCompanyRequest
+from app.schemas.request_schema.tax_configuration import TaxConfiguration
 from app.schemas.request_schema.user_request import CreateUserRequest
 from app.schemas.response_schema.company_response import CompanyResponse
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
@@ -79,3 +81,20 @@ def get_companies(
     user: User = Depends(require_super_admin)
 ): 
     return CompanyService.get_companies(db)
+
+@router.patch(
+    "/{company_id}/tax-config",
+    response_model=CompanyResponse,
+    description= "Endpoint to update tax information",
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def update_tax_config(
+    data: TaxConfiguration,
+    company_data: dict = Depends(get_company),
+    db: Session = Depends(get_db)
+):
+    return CompanyService.update_tax_config(db, company_data, data)

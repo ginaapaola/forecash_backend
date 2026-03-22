@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy import Boolean, Column, Enum, Float, Integer, String
 from sqlalchemy.orm import relationship
 from app.core.db.base import Base
 from app.models.company.entity_type import EntityType
+from app.models.company.regime_type import RegimeType
 
 
 class Company(Base):
@@ -18,6 +19,12 @@ class Company(Base):
         nullable=False
     )
     is_legally_constituted = Column(Boolean, nullable=False)
+    regime_type = Column(
+        Enum(RegimeType, name='regime_type'),
+        nullable=True
+    )
+    tax_rate = Column(Float, nullable=True)
+    is_vat_responsible = Column(Boolean, nullable=True)
 
     users_companies = relationship(
         "UserCompany", 

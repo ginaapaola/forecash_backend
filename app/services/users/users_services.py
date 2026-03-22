@@ -79,7 +79,10 @@ class UsersService:
                 economic_sector=relacion.company.economic_sector,
                 economic_activity=relacion.company.economic_activity,
                 entity_type=relacion.company.entity_type,
-                is_legally_constituted=relacion.company.is_legally_constituted
+                is_legally_constituted=relacion.company.is_legally_constituted,
+                regime_type=relacion.company.regime_type,
+                tax_rate=relacion.company.tax_rate,
+                is_vat_responsible=relacion.company.is_vat_responsible
             )
         )
         for relacion in user.companies
