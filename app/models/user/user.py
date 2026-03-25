@@ -1,10 +1,17 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Enum, func
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Enum, UniqueConstraint, func
 from sqlalchemy.orm import relationship
 from app.core.db.base import Base
 from app.models.user.doc_type import UserDocType
 from app.models.user.user_role import UserRole
 
 class User(Base):
+
+    """
+    Usuario del sistema.
+    Un usuario puede pertenecer a múltiples empresas con roles distintos
+    (tabla pivote UserCompany). Cumple CU-004 y RF-009.
+    """
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -31,5 +38,12 @@ class User(Base):
         cascade="all, delete-orphan",
         passive_deletes=True
     )
+
+    __table_args__ = (
+        UniqueConstraint("document_type", "document_number", name="uq_user_document"),
+    )
+ 
+    def __repr__(self) -> str:
+        return f"<User email={self.email} role={self.name}>"
 
 

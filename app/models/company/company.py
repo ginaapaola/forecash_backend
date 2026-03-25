@@ -6,6 +6,12 @@ from app.models.company.regime_type import RegimeType
 
 
 class Company(Base):
+
+    """
+    Empresa registrada en el sistema.
+    Cada empresa tiene su propio conjunto de datasets y operaciones.
+    Multi-tenancy implementado por empresa_id en todas las tablas de datos.
+    """
     __tablename__ = "company"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -39,3 +45,11 @@ class Company(Base):
         secondary="user_company",
         viewonly=True
     )
+
+    raw_datasets = relationship(
+        "RawDataset", 
+        back_populates="company")
+    
+    
+    def __repr__(self) -> str:
+        return f"<Company nit={self.nit} name={self.legal_name}>"
