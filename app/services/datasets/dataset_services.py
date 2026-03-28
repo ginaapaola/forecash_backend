@@ -219,33 +219,6 @@ class DatasetService:
             "summary": summary,
         }
 
-        
-    """@staticmethod
-    def calculate_metrics(df: pd.DataFrame):
-
-        metrics = {}
-
-        # Normalizar texto (evita errores por mayúsculas)
-        df["tipo_operacion"] = df["tipo_operacion"].str.lower()
-
-        # Filtrar por tipo
-        ventas = df[df["tipo_operacion"] == "venta"]
-        costos = df[df["tipo_operacion"] == "costo"]
-        compras = df[df["tipo_operacion"] == "compra"]
-
-        # Cálculos principales
-        metrics["total_ventas"] = int(ventas["valor_total"].sum())
-        metrics["total_costos"] = int(costos["valor_total"].sum())
-        metrics["total_compras"] = int(compras["valor_total"].sum())
-
-        # Utilidad
-        metrics["utilidad_bruta"] = (
-            metrics["total_ventas"] -
-            (metrics["total_costos"]
-            + metrics["total_compras"])
-        )
-
-        return metrics"""
     
     @staticmethod
     def _detect_operation_type(df: pd.DataFrame) -> OperationTypeDataset:
@@ -342,4 +315,4 @@ class DatasetService:
         db.commit()
         db.refresh(raw_dataset)
 
-        return raw_dataset
+        return raw_dataset        

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
@@ -16,10 +16,11 @@ from app.schemas.request_schema.select_company import SelectCompanyRequest
 from app.schemas.request_schema.tax_configuration import TaxConfiguration
 from app.schemas.request_schema.user_request import CreateUserRequest
 from app.schemas.response_schema.company_response import CompanyResponse
+from app.schemas.response_schema.dataset_response import DatasetListResponse
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.select_company_response import CompanySelectedResponse
 from app.services.company.company_service import CompanyService
-from app.services.datasets.calculate_metrics import calculate_metrics_by_period, get_operation_breakdown, get_product_detail
+from app.services.datasets.calculate_metrics import calculate_metrics_by_period, get_operation_breakdown
 from app.services.users.users_services import UsersService
 
 
@@ -101,6 +102,18 @@ def get_breakdown(
         end,
     )
 
+@router.get(
+        "/datasets",
+        description="Endpoint to get company's datasets",
+        response_model=List[DatasetListResponse]
+)
+def get_datasets_by_company(
+    company: dict = Depends(get_company),
+    db: Session = Depends(get_db)
+):
+    company_id = company["company"].id
+    return CompanyService.get_datasets(db, company_id)
+
 
 @router.get(
     "/{company_id}",
@@ -135,3 +148,16 @@ def update_tax_config(
     db: Session = Depends(get_db)
 ):
     return CompanyService.update_tax_config(db, company_data, data)
+
+@router.delete(
+    "/datasets/{dataset_id}",
+    description="Endpoint to delete a company's dataset",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+def delete_dataset(
+    dataset_id: int,
+    company: dict = Depends(get_company),
+    db: Session = Depends(get_db)
+):
+    company_id = company["company"].id
+    CompanyService.delete_dataset(db, company_id, dataset_id)

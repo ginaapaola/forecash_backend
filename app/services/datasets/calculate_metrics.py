@@ -4,8 +4,6 @@ from fastapi import HTTPException
 from sqlalchemy import Integer, String, func, case
 from sqlalchemy.orm import Session
 
-from app.models.dataset.raw_dataset import RawDataset
-from app.models.dataset.raw_record import RawRecord
 from app.models.dimensions.dim_category import DimCategory
 from app.models.dimensions.dim_date import DimDate
 from app.models.dimensions.dim_payment import DimPayment
