@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -8,6 +9,7 @@ from app.dependencies.get_company import get_company
 from app.dependencies.get_current_user import get_current_user
 from app.dependencies.get_rol import require_role
 from app.dependencies.require_super_admin import require_super_admin
+from app.models.dimensions.operation_type import OperationType
 from app.models.user.user import User
 from app.models.user_company.company_role import CompanyRole
 from app.schemas.request_schema.select_company import SelectCompanyRequest
@@ -17,6 +19,7 @@ from app.schemas.response_schema.company_response import CompanyResponse
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.select_company_response import CompanySelectedResponse
 from app.services.company.company_service import CompanyService
+from app.services.datasets.calculate_metrics import calculate_metrics_by_period, get_operation_breakdown, get_product_detail
 from app.services.users.users_services import UsersService
 
 
@@ -49,22 +52,6 @@ def select_company(
 ):
     return CompanyService.select_company(db, data, user.id)
 
-@router.get(
-    "/{company_id}",
-    response_model=CompanyResponse,
-    description="Endpoint to get company's info",
-    responses={
-        404: {"model": NotFoundResponse},
-        403: {"model": ForbiddenResponse},
-        401: {"model": UnauthorizedResponse}
-    }
-)
-def get_company_id(
-    company_id: int,
-    db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
-):
-    return CompanyService.get_company_id(db, company_id)
 
 @router.get(
     "/",
@@ -81,6 +68,56 @@ def get_companies(
     user: User = Depends(require_super_admin)
 ): 
     return CompanyService.get_companies(db)
+
+
+@router.get("/metrics")
+def get_metrics_by_period(
+    fecha_inicio: date,
+    fecha_fin: date,
+    db: Session = Depends(get_db),
+    company: dict = Depends(get_company),
+    user: User = Depends(get_current_user)
+):
+    company_id = company["company"].id
+    return calculate_metrics_by_period(
+        db, company_id, fecha_inicio, fecha_fin
+    )
+
+@router.get("/dashboard/breakdown")
+def get_breakdown(
+    operation_type: OperationType,
+    start: date,
+    end: date,
+    company: dict = Depends(get_company),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    company_id = company["company"].id
+    return get_operation_breakdown(
+        db,
+        company_id,
+        operation_type,
+        start,
+        end,
+    )
+
+
+@router.get(
+    "/{company_id}",
+    response_model=CompanyResponse,
+    description="Endpoint to get company's info",
+    responses={
+        404: {"model": NotFoundResponse},
+        403: {"model": ForbiddenResponse},
+        401: {"model": UnauthorizedResponse}
+    }
+)
+def get_company_id(
+    company_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    return CompanyService.get_company_id(db, company_id)
 
 @router.patch(
     "/{company_id}/tax-config",

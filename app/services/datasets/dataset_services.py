@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.models.dataset.dataset_enum import DatasetStatus, FileType, OperationTypeDataset
 from app.models.dataset.raw_dataset import RawDataset
 from app.models.dataset.raw_record import RawRecord
+from app.services.datasets.run_etl import run_etl
 from app.services.datasets.mapping.mapping_service import MappingService
 
 class DatasetService:
@@ -70,6 +71,7 @@ class DatasetService:
            # metrics = DatasetService.calculate_metrics(df)
 
             raw_dataset_id = None
+            etl_summary = None
             if validation["is_valid"]:
                 file_type = FileType.csv if file.filename.endswith(".csv") else FileType.xlsx
                 raw_dataset = await DatasetService.save_raw_dataset(
@@ -81,6 +83,7 @@ class DatasetService:
                     uploaded_by=uploaded_by,
                 )
                 raw_dataset_id = raw_dataset.id
+                etl_summary = run_etl(db, raw_dataset)
 
             return DatasetService._sanitize_for_json({
                 "file_name": file.filename,
@@ -90,6 +93,7 @@ class DatasetService:
                 "validation": validation,
                # "metrics": metrics
                 "raw_dataset_id": raw_dataset_id, #SI NO PASÓ LA VALIDACIÓN ES NONE
+                "etl_summary": etl_summary
             })
 
         except Exception as e:
@@ -98,7 +102,8 @@ class DatasetService:
 
     @staticmethod
     def validate_dataframe(df: pd.DataFrame) -> dict:
-        REQUIRED_COLUMNS = {"fecha", "tipo_operacion", "valor_total"}
+
+        REQUIRED_COLUMNS = { "fecha" , "valor_total"}  
         VALID_OPERATIONS = {"venta", "compra", "costo"}
 
         errors = []
@@ -115,18 +120,18 @@ class DatasetService:
             }
 
         # ── 2. Normalizar columnas ────────────────────────────
-        df.columns = [col.strip().lower() for col in df.columns]
+        mapping = MappingService.infer_column_mapping(df)
+        mapped_fields = mapping["mapped"]
         total_rows = len(df)
 
+        for standard_col, original_col in mapped_fields.items():
+            df[standard_col] = df[original_col]
+
         # ── 3. Validar columnas obligatorias ─────────────────
-        missing = REQUIRED_COLUMNS - set(df.columns)
+        missing = REQUIRED_COLUMNS - set(mapped_fields.keys())
+
         if missing:
-            return {
-                "is_valid": False,
-                "errors": [f"Faltan columnas obligatorias: {', '.join(sorted(missing))}"],
-                "warnings": [],
-                "summary": {}
-            }
+            errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
 
         # ── 4. Tipos de datos ────────────────────────────────
         for col in df.columns:
@@ -156,16 +161,19 @@ class DatasetService:
         elif null_values > 0:
             warnings.append(f"'valor_total' tiene {null_values} valores nulos o inválidos.")
 
-        # ── 6. tipo_operacion ────────────────────────────────
-        df["tipo_operacion"] = df["tipo_operacion"].astype(str).str.strip().str.lower()
+        # ── 6. tipo_operacion (flexible) ────────────────────────────────
+        if "tipo_operacion" in df.columns:
+            df["tipo_operacion"] = df["tipo_operacion"].astype(str).str.strip().str.lower()
 
-        invalid_ops = ~df["tipo_operacion"].isin(VALID_OPERATIONS)
-        invalid_count = invalid_ops.sum()
+            invalid_ops = ~df["tipo_operacion"].isin(VALID_OPERATIONS)
+            invalid_count = invalid_ops.sum()
 
-        if invalid_count == total_rows:
-            errors.append("No hay valores válidos en 'tipo_operacion'.")
-        elif invalid_count > 0:
-            warnings.append(f"{invalid_count} valores no reconocidos en 'tipo_operacion'.")
+            if invalid_count == total_rows:
+                errors.append("No hay valores válidos en 'tipo_operacion'.")
+            elif invalid_count > 0:
+                warnings.append(f"{invalid_count} valores no reconocidos en 'tipo_operacion'.")
+        else:
+            warnings.append("No se encontró 'tipo_operacion'. Se intentará inferir automáticamente.")
 
         # ── 7. Nulos en columnas clave ───────────────────────
         for col in REQUIRED_COLUMNS:
@@ -175,17 +183,22 @@ class DatasetService:
                 warnings.append(f"'{col}' tiene {nulls} nulos ({pct}%).")
 
         # ── 8. Summary ──────────────────────────────────────
+        operations_found ={}
+
+        if "tipo_operacion" in df.columns:
+                operations_found = {
+                    str(k): int(v)
+                    for k, v in df["tipo_operacion"]
+                    .value_counts()
+                    .to_dict()
+                    .items()
+                    if k in VALID_OPERATIONS
+                }
+
         summary = {
             "total_rows": total_rows,
             "total_columns": len(df.columns),
-            "operations_found": {
-                str(k): int(v)
-                for k, v in df["tipo_operacion"]
-                .value_counts()
-                .to_dict()
-                .items()
-                if k in VALID_OPERATIONS
-            }
+            "operations_found": operations_found   
         }
 
         # 🔥 date_range (se mantiene como pediste)
@@ -236,16 +249,58 @@ class DatasetService:
     
     @staticmethod
     def _detect_operation_type(df: pd.DataFrame) -> OperationTypeDataset:
-        ops = set(df["tipo_operacion"].astype(str).str.strip().str.lower().unique())
-        ops = ops & {"venta", "compra", "costo"}
+        
+        # CASO 1: existe tipo_operacion → usar lógica actual
+        if "tipo_operacion" in df.columns:
+            ops = set(df["tipo_operacion"].astype(str).str.strip().str.lower().unique())
+            ops = ops & {"venta", "compra", "costo"}
 
-        if ops == {"venta"}:
+            if ops == {"venta"}:
+                return OperationTypeDataset.sale
+            elif ops == {"compra"}:
+                return OperationTypeDataset.purchase
+            elif ops == {"costo"}:
+                return OperationTypeDataset.expense
+            else:
+                return OperationTypeDataset.mixed
+
+        # CASO 2: NO existe → detección automática
+        return DatasetService._detect_operation_type_from_columns(df)
+
+    @staticmethod
+    def _detect_operation_type_from_columns(df: pd.DataFrame):
+        columns = set(df.columns)
+
+        scores = {
+            "venta": 0,
+            "compra": 0,
+            "costo": 0
+        }
+
+        # Reglas simples pero efectivas
+        sales_cols = {"precio_unitario", "total_venta", "cliente", "producto"}
+        purchase_cols = {"compra","id_compra", "factura_compra", "factura de compra", "proveedor", "costo_unitario", "total_compra", "valor_unitario"}
+        cost_cols = {"tipo_costo", "monto", "descripcion"}
+
+        for col in columns:
+            if col in sales_cols:
+                scores["venta"] += 2
+            if col in purchase_cols:
+                scores["compra"] += 2
+            if col in cost_cols:
+                scores["costo"] += 2
+
+        detected = max(scores, key=scores.get)
+
+        if scores[detected] == 0:
+            return OperationTypeDataset.mixed
+
+        if detected == "venta":
             return OperationTypeDataset.sale
-        elif ops == {"compra"}:
+        elif detected == "compra":
             return OperationTypeDataset.purchase
-        elif ops == {"costo"}:
+        elif detected == "costo":
             return OperationTypeDataset.expense
-        else: return OperationTypeDataset.mixed
 
     @staticmethod
     async def save_raw_dataset(

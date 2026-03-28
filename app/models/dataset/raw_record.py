@@ -21,7 +21,7 @@ class RawRecord(Base):
     id = Column(Integer, primary_key=True, index=True)
     raw_dataset_id = Column(
         Integer,
-        ForeignKey("raw_datasets.id"),
+        ForeignKey("raw_datasets.id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
         index=True
     )

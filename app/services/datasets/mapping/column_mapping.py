@@ -22,7 +22,7 @@ COLUMN_MAPPING_RULES = {
         "precio_unit", "costo_unitario", "costo_unit", "valor unitario", "Vr. Unit"
     ],
     "dim_category": [
-        "categoria", "categoría", "category", "tipo_producto", "grupo",
+        "categoria", "categoría", "category", "tipo_producto", "grupo", "subcategoria", "sub_categoria", "sub categoria"
         "clasificacion", "clasificación", "linea", "línea", "area"
     ],
     "dim_client": [
@@ -37,6 +37,6 @@ COLUMN_MAPPING_RULES = {
     ],
     "dim_product": [
         "producto", "product", "item", "articulo", "artículo",
-        "nombre_producto", "referencia", "ref", "ítem", "ít.", "Items", 
+        "nombre_producto", "referencia", "ref", "ítem", "ít.", "Items",
     ],
 }

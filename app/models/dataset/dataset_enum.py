@@ -17,8 +17,8 @@ class DatasetStatus(str, enum.Enum):
     """
 
     pending = "pending"
-    staged = "staged"
     processed = "processed"
+    processed_with_errors = "processed_with_errors"
     error = "error"
 
 

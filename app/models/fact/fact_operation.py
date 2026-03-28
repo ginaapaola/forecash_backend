@@ -23,7 +23,7 @@ class FactOperation(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     raw_record_id = Column(Integer, ForeignKey("raw_records.id", ondelete="CASCADE"), nullable=False, unique=True)
-    raw_dataset_id = Column(Integer, ForeignKey("raw_datasets.id"), nullable=False, index=True)
+    raw_dataset_id = Column(Integer, ForeignKey("raw_datasets.id", ondelete="CASCADE"), nullable=False, index=True)
     company_id = Column(Integer, ForeignKey("company.id", ondelete="CASCADE"), nullable=False, index=True)
     operation_type = Column(
         Enum(OperationType, name="operation"),
