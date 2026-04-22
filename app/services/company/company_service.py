@@ -1,11 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from app.models.company.company import Company
+from app.models.dataset.raw_dataset import RawDataset
 from app.models.user_company.company_role import CompanyRole
 from app.models.user_company.user_empresa import UserCompany
 from app.schemas.request_schema.select_company import SelectCompanyRequest
 from app.schemas.request_schema.tax_configuration import TaxConfiguration
 from app.schemas.response_schema.company_response import CompanyResponse
+from app.schemas.response_schema.dataset_response import DatasetListResponse
 from app.schemas.response_schema.user_basic_response import UserBasicResponse
 
 
@@ -124,3 +126,47 @@ class CompanyService:
             )
 
         return company
+    
+    def get_datasets(db: Session, company_id):
+
+        company = db.query(Company).filter(Company.id == company_id).first()
+
+        if not company:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail = "Company not found"
+            )
+        
+        datasets = db.query(RawDataset).filter(RawDataset.company_id == company.id).order_by(RawDataset.created_at.desc()).all()
+
+        return datasets
+    
+    def delete_dataset(db: Session, company_id: int, dataset_id: int) -> None:
+        """
+        Elimina un dataset asociado a una empresa.
+
+        Args:
+            db: Sesión activa de SQLAlchemy.
+            company_id: ID de la empresa propietaria del dataset.
+            dataset_id: ID del dataset a eliminar.
+
+        Raises:
+            HTTPException 404: Si el dataset no existe o no pertenece a la empresa.
+        """
+        dataset = (
+            db.query(RawDataset)
+            .filter(
+                RawDataset.id == dataset_id,
+                RawDataset.company_id == company_id  # evita eliminar datasets de otras empresas
+            )
+            .first()
+        )
+
+        if not dataset:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Dataset not found"
+            )
+
+        db.delete(dataset)
+        db.commit()
