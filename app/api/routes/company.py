@@ -2,6 +2,7 @@ from datetime import date
 from typing import List
 
 from fastapi import APIRouter, Depends, status
+from sqlalchemy import String
 from sqlalchemy.orm import Session
 
 from app.core.db.session import get_db
@@ -20,7 +21,7 @@ from app.schemas.response_schema.dataset_response import DatasetListResponse
 from app.schemas.response_schema.http_responses import ForbiddenResponse, NotFoundResponse, UnauthorizedResponse
 from app.schemas.response_schema.select_company_response import CompanySelectedResponse
 from app.services.company.company_service import CompanyService
-from app.services.datasets.calculate_metrics import calculate_metrics_by_period, get_operation_breakdown
+from app.services.datasets.calculate_metrics import calculate_metrics_by_period, get_categories_breakdown, get_expense_evolution, get_operation_breakdown, get_product_evolution, get_products_record
 from app.services.users.users_services import UsersService
 
 
@@ -100,6 +101,73 @@ def get_breakdown(
         operation_type,
         start,
         end,
+    )
+
+@router.get("/dashboard/categories/products")
+def get_products_by_categories(
+    start: date,
+    end: date,
+    category_id: int,
+    company: dict = Depends(get_company),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    company_id = company["company"].id
+    return get_categories_breakdown(
+        db,
+        company_id,
+        category_id,
+        start,
+        end
+    )
+
+@router.get("/dashboard/categories/products/product")
+def get_product_payload_category(
+    start:date, 
+    end: date,
+    product_id: int,
+    company: dict = Depends(get_company),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    company_id = company["company"].id
+    return get_products_record(
+        db,
+        company_id,
+        product_id,
+        start,
+        end
+    )
+
+@router.get("/dashboard/products/product")
+def get_evolution_product(
+    product: int,
+    start: date,
+    end: date,
+    db: Session = Depends(get_db),
+    company: dict = Depends(get_company),
+    user: User = Depends(get_current_user)   
+): 
+    company_id = company["company"].id
+    return get_product_evolution(db, company_id, product, start, end)
+
+@router.get("/dashboard/expenses/evolution")
+def expense_evolution(
+    expense: str,
+    start: date,
+    end: date,
+    db: Session = Depends(get_db),
+    company: dict = Depends(get_company),
+    user: User = Depends(get_current_user)   
+
+):
+    company_id = company["company"].id
+    return get_expense_evolution(
+        db=db,
+        company_id=company_id,
+        expense_name=expense,
+        fecha_inicio=start,
+        fecha_fin=end,
     )
 
 @router.get(

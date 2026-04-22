@@ -14,6 +14,7 @@ class DimCategory(Base):
     name = Column(String, nullable=False, unique=True, index=True)
 
     #Relaciones
-    fact_operation = relationship("FactOperation", back_populates="dim_category")
+    fact_operation = relationship("FactOperation", back_populates="dim_category", lazy='noload')
+    dim_product = relationship("DimProduct", back_populates="dim_category")
 
     

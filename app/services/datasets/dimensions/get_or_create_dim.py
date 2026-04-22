@@ -59,16 +59,34 @@ def _get_or_create_dim_payment(db: Session, payment_type: str) -> DimPayment:
     return dim
 
 @staticmethod
-def _get_or_create_dim_product(db: Session, product: str, company_id: int) -> DimProduct:
+def _get_or_create_dim_product(
+    db: Session,
+    product: str,
+    company_id: int,
+    dim_category=None  # 👈 ahora recibe el objeto
+) -> DimProduct:
+
     product_clean = product.strip().lower()
+
     dim = db.query(DimProduct).filter(
         DimProduct.name == product_clean,
         DimProduct.company_id == company_id
     ).first()
+
     if not dim:
-        dim = DimProduct(name=product_clean, company_id=company_id)
+        dim = DimProduct(
+            name=product_clean,
+            company_id=company_id,
+            category_id=dim_category.id if dim_category else None  # 👈 FIX
+        )
         db.add(dim)
         db.flush()
+
+    else:
+        # 🔥 opcional: asignar categoría si no tiene
+        if not dim.category_id and dim_category:
+            dim.category_id = dim_category.id
+
     return dim
 
 @staticmethod

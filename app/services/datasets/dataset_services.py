@@ -145,7 +145,13 @@ class DatasetService:
         # Intentar detectar fechas en columnas tipo texto
         for col in df.columns:
             if detected_types[col] == "text":
-                parsed = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
+                # Probar formato ISO (YYYY-MM-DD) primero — más común en exports de POS
+                parsed = pd.to_datetime(df[col], format="%Y-%m-%d", errors="coerce")
+                
+                # Si no alcanza el 80%, intentar con inferencia
+                if parsed.notna().sum() <= total_rows * 0.8:
+                    parsed = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
+                
                 if parsed.notna().sum() > total_rows * 0.8:
                     detected_types[col] = "date"
                     df[col] = parsed
