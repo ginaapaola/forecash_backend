@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm 2cm 3cm 2cm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #1e293b;
+        }
+
+        /* ── ENCABEZADO ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1e40af;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header .brand {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1e40af;
+            letter-spacing: -0.5px;
+        }
+
+        .header .brand span {
+            color: #06b6d4;
+        }
+
+        .header .meta {
+            text-align: right;
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .header .meta strong {
+            color: #1e293b;
+            font-size: 12px;
+        }
+
+        /* ── TÍTULOS DE SECCIÓN ── */
+        .seccion {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e40af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-left: 3px solid #06b6d4;
+            padding-left: 8px;
+            margin-bottom: 10px;
+            margin-top: 18px;
+        }
+
+        /* ── KPIs ── */
+        .kpis {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .kpi-card {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            background-color: #f8fafc;
+        }
+
+        .kpi-card .label {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-card .valor {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .kpi-card.verde .valor {
+            color: #16a34a;
+        }
+
+        .kpi-card.rojo .valor {
+            color: #dc2626;
+        }
+
+        .kpi-card.cyan .valor {
+            color: #0891b2;
+        }
+
+        /* ── INSIGHTS ── */
+        .insights-lista {
+            margin-bottom: 6px;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 10px;
+            border-left: 3px solid #06b6d4;
+            background: #f0f9ff;
+            margin-bottom: 5px;
+            border-radius: 0 4px 4px 0;
+            font-size: 10px;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .insight-item.positivo {
+            border-left: 3px solid #16a34a;
+            background: #ecfdf5;
+            color: #166534;
+        }
+
+        .insight-item.negativo {
+            border-left: 3px solid #dc2626;
+            background: #fef2f2;
+            color: #7f1d1d;
+        }
+
+        .insight-item.neutral {
+            border-left: 3px solid #f59e0b;
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .insight-item::before {
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .insight-item.positivo::before {
+            content: "✔";
+        }
+
+        .insight-item.negativo::before {
+            content: "⚠";
+        }
+
+        .insight-item.neutral::before {
+            content: "➜";
+        }
+
+        /* ── TOP RELEVANTES ── */
+        .relevantes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .relevante-card {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+
+        .relevante-card .rl {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .relevante-card .rv {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        /* ── TABLA ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+
+        thead tr {
+            background-color: #1e40af;
+        }
+
+        th {
+            color: white;
+            padding: 7px 8px;
+            text-align: left;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 10px;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-green {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .text-red {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        /* ── PIE ── */
+        .footer {
+            position: running(footer);
+            bottom: 0.8cm;
+            left: 2cm;
+            right: 2cm;
+            height: 1.5cm;
+            font-size: 9px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 5px;
+        }
+
+        @page {
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. ENCABEZADO -->
+    <div class="header">
+        <!-- <div class="brand">Fore<span>cash</span></div> -->
+        <img src="../assets/forecash_text_right.png" alt="forecash_logo" style="height:40px;">
+        <div class="meta">
+            <strong>{{ empresa }}</strong><br>
+            Período: {{ fecha_inicio }} — {{ fecha_fin }}<br>
+            Generado por: {{ usuario }}
+        </div>
+    </div>
+
+    <!-- 2. RESUMEN EJECUTIVO -->
+    <div class="seccion">Resumen Ejecutivo</div>
+    <div class="kpis">
+        {% if kpis.total_ventas is not none %}
+        <div class="kpi-card verde">
+            <div class="label">Total Ventas</div>
+            <div class="valor">${{ "{:,.0f}".format(kpis.total_ventas) }}</div>
+        </div>
+        {% endif %}
+        {% if kpis.total_compras is not none %}
+        <div class="kpi-card rojo">
+            <div class="label">Total Compras</div>
+            <div class="valor">${{ "{:,.0f}".format(kpis.total_compras) }}</div>
+        </div>
+        {% endif %}
+        {% if kpis.total_costos is not none %}
+        <div class="kpi-card rojo">
+            <div class="label">Total Costos</div>
+            <div class="valor">${{ "{:,.0f}".format(kpis.total_costos) }}</div>
+        </div>
+        {% endif %}
+        {% if kpis.utilidad_operativa is not none %}
+        <div class="kpi-card cyan">
+            <div class="label">Utilidad Operativa</div>
+            <div class="valor">${{ "{:,.0f}".format(kpis.utilidad_operativa) }}</div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="kpis">
+        {% if kpis.margen_ganancia_pct is not none %}
+        <div class="kpi-card">
+            <div class="label">Margen Operativo</div>
+            <div class="valor">
+                {{ "{:.2f}".format(0 if kpis.margen_ganancia_pct < 0 else kpis.margen_ganancia_pct) }}% </div>
+            </div>
+            {% endif %}
+            {% if kpis.ticket_promedio is not none %}
+            <div class="kpi-card">
+                <div class="label">Ticket Promedio</div>
+                <div class="valor">${{ "{:,.0f}".format(kpis.ticket_promedio) }}</div>
+            </div>
+            {% endif %}
+            {% if kpis.total_transacciones is not none %}
+            <div class="kpi-card">
+                <div class="label">Total Transacciones</div>
+                <div class="valor">{{ kpis.total_transacciones }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 3. INSIGHTS AUTOMÁTICOS -->
+        {% if insights_texto %}
+        <div class="seccion">Insights del Período</div>
+        <div class="insights-lista">
+            {% for insight in insights_texto %}
+            <div class="insight-item {{insight.tipo}}">{{ insight.texto }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if grafico_ventas or grafico_egresos %}
+        <div class="seccion" style="margin-top: 20px;">Análisis Gráfico</div>
+        <div style="display: flex; gap: 16px; margin-bottom: 6px; align-items: flex-start;">
+            {% if grafico_ventas %}
+            <div style="flex: 2;">
+                <img src="data:image/png;base64,{{ grafico_ventas }}" style="width: 100%;">
+            </div>
+            {% endif %}
+            {% if grafico_egresos %}
+            <div style="flex: 1;">
+                <img src="data:image/png;base64,{{ grafico_egresos }}" style="width: 100%;">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- 4. TOP RELEVANTES -->
+        <div class="seccion">Más Relevantes</div>
+        <div class="relevantes">
+            {% if top_producto %}
+            <div class="relevante-card">
+                <div class="rl">Producto más vendido</div>
+                <div class="rv">{{ top_producto }}</div>
+            </div>
+            {% endif %}
+            {% if top_proveedor %}
+            <div class="relevante-card">
+                <div class="rl">Proveedor principal</div>
+                <div class="rv">{{ top_proveedor }}</div>
+            </div>
+            {% endif %}
+            {% if top_gasto %}
+            <div class="relevante-card">
+                <div class="rl">Gasto más frecuente</div>
+                <div class="rv">{{ top_gasto }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 5. TABLA DE PRODUCTOS -->
+        {% if productos %}
+        <div class="seccion">Top Productos del Período</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th class="text-right">Precio Venta</th>
+                    <th class="text-right">Costo Prom.</th>
+                    <th class="text-right">Cantidad</th>
+                    <th class="text-right">Total Ventas</th>
+                    <th class="text-right">Utilidad</th>
+                    <th class="text-right">Margen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in productos %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td class="text-right">${{ "{:,.0f}".format(p.avg_sale_price) }}</td>
+                    <td class="text-right">${{ "{:,.0f}".format(p.avg_cost) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(p.quantity_sold) }}</td>
+                    <td class="text-right">${{ "{:,.0f}".format(p.total_ventas) }}</td>
+                    <td class="text-right {% if p.total_utilidad >= 0 %}text-green{% else %}text-red{% endif %}">
+                        ${{ "{:,.0f}".format(p.total_utilidad) }}
+                    </td>
+                    <td class="text-right">
+                        {{ "{:.2f}".format(0 if p.margin_pct < 0 else p.margin_pct) }}% </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- PIE DE PÁGINA -->
+        <div class="footer">
+            <span>Forecash © 2025 | {{ empresa }} | {{ fecha_inicio }} — {{ fecha_fin }}</span>
+        </div>
+
+</body>
+
+</html>
