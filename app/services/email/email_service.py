@@ -24,15 +24,6 @@ class EmailService:
         <p><strong>Usuario:</strong> {username}</p>
         <p><strong>Contraseña inicial:</strong> {password}</p>
 
-        <p>
-            Activa tu cuenta haciendo clic aquí:
-            <br>
-            <a href="{activation_link}">
-                Activar Cuenta
-            </a>
-        </p>
-
-        <p>Este enlace expira en 24 horas.</p>
         """
         
         message = MessageSchema(

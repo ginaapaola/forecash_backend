@@ -51,6 +51,13 @@ def generar_reporte_pdf(
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
     template = env.get_template("reporte_base.html")
 
+    def _limpiar_nombre(valor):
+        if not valor:
+            return None
+        if str(valor).strip().lower() in ("sin nombre", "none", ""):
+            return None
+        return valor
+
     html_renderizado = template.render(
         empresa=empresa,
         usuario=usuario,
@@ -124,9 +131,9 @@ def _generar_insights(kpis: dict, insights: dict, chart_data: list) -> list:
 
     # Top producto
     top_p = insights.get("top_producto")
-    if top_p:
+    if top_p and top_p.strip().lower() not in ("sin nombre", "", "none"):
         textos.append({
-            "texto":f"El producto más vendido fue '{top_p}', liderando en volumen de unidades.",
+            "texto": f"El producto más vendido fue '{top_p}', liderando en volumen de unidades.",
             "tipo": "positivo"
         })
 
