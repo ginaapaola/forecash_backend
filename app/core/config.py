@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     FIREBASE_CREDENTIALS_PATH: str
     FIREBASE_STORAGE_BUCKET: str
 
+    #FRONTEND URL
+    FRONTEND_URL: str
+
     #VARIABLES EMAIL
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
