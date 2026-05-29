@@ -13,11 +13,12 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 1
 
     #Database
-    DB_HOST: str
-    DB_PORT: int = 5432
-    DB_NAME: str
-    DB_USER: str
-    DB_PASSWORD: str
+    DB_URL: str
+    # DB_HOST: str
+    # DB_PORT: int = 5432
+    # DB_NAME: str
+    # DB_USER: str
+    # DB_PASSWORD: str
 
     #SUPERADMIN
     SUPERADMIN_NAME: str
@@ -47,11 +48,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self) -> str:
-        return (
-            f"postgresql+psycopg2://"
-            f"{self.DB_USER}:{self.DB_PASSWORD}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-        )
+        return self.DB_URL
     
     class Config:
         env_file = ".env"
