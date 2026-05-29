@@ -4,6 +4,17 @@ from app.core.config import settings
 from app.core.security import hash_password
 from app.models.user.user import User, UserRole, UserDocType
 from app.models.user_company import user_empresa
+from app.core.db.database import SessionLocal
+from app.models.dimensions.operation_type import OperationType
+from app.models.dimensions.dim_date import DimDate
+from app.models.dimensions.dim_category import DimCategory
+from app.models.dimensions.dim_client import DimClient
+from app.models.dimensions.dim_payment import DimPayment
+from app.models.dimensions.dim_product import DimProduct
+from app.models.dimensions.dim_supplier import DimSupplier
+from app.models.fact.fact_operation import FactOperation
+from app.models.dataset.raw_dataset import RawDataset
+from app.models.dataset.raw_record import RawRecord
 
 
 def create_super_admin(): 
