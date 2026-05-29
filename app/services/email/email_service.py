@@ -30,34 +30,30 @@ class EmailService:
         """
 
         payload = {
-            "sender": {
-                "name": settings.BREVO_SENDER_NAME,
-                "email": settings.MAIL_FROM,
-            },
-            "to": [{"email": to_email}],
+            "from": f"{settings.RESEND_SENDER_NAME} <{settings.MAIL_FROM}>",
+            "to": [to_email],
             "subject": "Activacion de cuenta",
-            "htmlContent": html_content,
+            "html": html_content,
         }
 
         headers = {
-            "accept": "application/json",
-            "api-key": settings.BREVO_API_KEY,
+            "authorization": f"Bearer {settings.RESEND_API_KEY}",
             "content-type": "application/json",
         }
 
         try:
-            if not settings.BREVO_API_KEY:
-                raise ValueError("BREVO_API_KEY is not configured")
+            if not settings.RESEND_API_KEY:
+                raise ValueError("RESEND_API_KEY is not configured")
 
             async with httpx.AsyncClient(timeout=15) as client:
                 response = await client.post(
-                    settings.BREVO_API_URL,
+                    settings.RESEND_API_URL,
                     json=payload,
                     headers=headers,
                 )
                 if response.is_error:
                     logger.error(
-                        "Brevo rejected activation email to %s with status %s: %s",
+                        "Resend rejected activation email to %s with status %s: %s",
                         to_email,
                         response.status_code,
                         response.text,

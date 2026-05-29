@@ -45,10 +45,10 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool
     USE_CREDENTIALS: bool
 
-    #BREVO
-    BREVO_API_KEY: str = ""
-    BREVO_API_URL: str = "https://api.brevo.com/v3/smtp/email"
-    BREVO_SENDER_NAME: str = "Forecash"
+    #RESEND
+    RESEND_API_KEY: str = ""
+    RESEND_API_URL: str = "https://api.resend.com/emails"
+    RESEND_SENDER_NAME: str = "Forecash"
     
 
     @property
