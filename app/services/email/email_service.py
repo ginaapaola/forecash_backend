@@ -1,11 +1,14 @@
-from fastapi_mail import FastMail, MessageSchema, MessageType
+import logging
+
+import httpx
 
 from app.core.config import settings
-from app.core.mail.mail_config import mail_config
 
 
+logger = logging.getLogger(__name__)
 
-class EmailService: 
+
+class EmailService:
 
     @staticmethod
     async def send_activation_email(
@@ -17,21 +20,41 @@ class EmailService:
         activation_link = f"{settings.FRONTEND_URL}/activate?token={activation_token}"
 
         html_content = f"""
-        <h2>Activación de cuenta</h2>
+        <h2>Activacion de cuenta</h2>
         <p>Hola,</p>
         <p>Tu cuenta ha sido creada.</p>
 
         <p><strong>Usuario:</strong> {username}</p>
-        <p><strong>Contraseña inicial:</strong> {password}</p>
-
+        <p><strong>Contrasena inicial:</strong> {password}</p>
+        <p><a href="{activation_link}">Activar cuenta</a></p>
         """
-        
-        message = MessageSchema(
-            subject="Activación de cuenta",
-            recipients=[to_email],
-            body=html_content,
-            subtype=MessageType.html
-        )
 
-        fm = FastMail(mail_config)
-        await fm.send_message(message)
+        payload = {
+            "sender": {
+                "name": settings.BREVO_SENDER_NAME,
+                "email": settings.MAIL_FROM,
+            },
+            "to": [{"email": to_email}],
+            "subject": "Activacion de cuenta",
+            "htmlContent": html_content,
+        }
+
+        headers = {
+            "accept": "application/json",
+            "api-key": settings.BREVO_API_KEY,
+            "content-type": "application/json",
+        }
+
+        try:
+            if not settings.BREVO_API_KEY:
+                raise ValueError("BREVO_API_KEY is not configured")
+
+            async with httpx.AsyncClient(timeout=15) as client:
+                response = await client.post(
+                    settings.BREVO_API_URL,
+                    json=payload,
+                    headers=headers,
+                )
+                response.raise_for_status()
+        except Exception:
+            logger.exception("Could not send activation email to %s", to_email)

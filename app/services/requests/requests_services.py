@@ -237,7 +237,7 @@ class RequestsServices:
                     u["password"],
                     create_activation_token(u["instance"].id)
             )
-            print("correo enviado a:", u["instance"].email)
+            print("correo encolado para:", u["instance"].email)
         return request
             
     
