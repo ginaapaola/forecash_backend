@@ -22,8 +22,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://forecash-front.vercel.app",
-        "https://forecash-front-ginaapaola.vercel.app",
+        "https://forecash-ginaapaola-gina-paola-s-projects.vercel.app",
+        "https://forecash-dyq30u5bo-gina-paola-s-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
