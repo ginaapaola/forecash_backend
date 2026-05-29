@@ -55,6 +55,13 @@ class EmailService:
                     json=payload,
                     headers=headers,
                 )
+                if response.is_error:
+                    logger.error(
+                        "Brevo rejected activation email to %s with status %s: %s",
+                        to_email,
+                        response.status_code,
+                        response.text,
+                    )
                 response.raise_for_status()
         except Exception:
             logger.exception("Could not send activation email to %s", to_email)
