@@ -1,6 +1,9 @@
+"""Configuracion de la aplicacion basada en variables de entorno."""
+
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    """Define las variables de entorno requeridas por Forecash."""
     #enviroment
     ENV: str = "development"
     DEBUG: bool = False
@@ -53,6 +56,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self) -> str:
+        """Alias usado por componentes que esperan DATABASE_URL."""
         return self.DB_URL
     
     class Config:

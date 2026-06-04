@@ -1,3 +1,9 @@
+"""Router raiz de la API.
+
+Agrupa los routers funcionales de autenticacion, usuarios, solicitudes,
+empresas, datasets, reportes y predicciones bajo el prefijo global `/api`.
+"""
+
 from fastapi import APIRouter
 
 from app.api.routes.auth import router as auth_router
@@ -21,6 +27,7 @@ router.include_router(prediction_router)
 
 @router.get("/health")
 async def health_check():
+    """Verifica que la aplicacion este levantada y respondiendo."""
     return {"status": "ok", "message": "Forecash is runing"}
 
 

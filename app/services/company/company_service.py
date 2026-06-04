@@ -1,3 +1,9 @@
+"""Servicios de negocio para empresas.
+
+Contiene consultas, seleccion de empresa activa, configuracion tributaria y
+administracion de datasets asociados a una compania.
+"""
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from app.models.company.company import Company
@@ -12,9 +18,11 @@ from app.schemas.response_schema.user_basic_response import UserBasicResponse
 
 
 class CompanyService:
+    """Agrupa operaciones transaccionales y consultas sobre empresas."""
     
     @staticmethod
     def get_company_id(db: Session, company_id):
+        """Obtiene una empresa con sus usuarios asociados."""
         company = (
             db.query(Company)
             .options(
@@ -58,6 +66,7 @@ class CompanyService:
     
     @staticmethod
     def get_companies(db: Session):
+        """Lista todas las empresas registradas."""
         companies = db.query(Company).all()
 
         if companies is None:
@@ -73,6 +82,7 @@ class CompanyService:
     
     @staticmethod
     def select_company(db: Session, data: SelectCompanyRequest, user_id):
+        """Valida pertenencia del usuario y devuelve su rol en la empresa."""
         
         relation = (
             db.query(UserCompany)
@@ -96,6 +106,7 @@ class CompanyService:
     
     @staticmethod
     def update_tax_config(db: Session, company_data: dict, data: TaxConfiguration):
+        """Actualiza datos tributarios permitidos para representantes legales."""
         company = company_data["company"]
         role = company_data["role"]
 
@@ -128,6 +139,7 @@ class CompanyService:
         return company
     
     def get_datasets(db: Session, company_id):
+        """Lista datasets pertenecientes a una empresa."""
 
         company = db.query(Company).filter(Company.id == company_id).first()
 

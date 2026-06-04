@@ -1,3 +1,9 @@
+"""Servicio de inicio de sesion.
+
+Valida credenciales, emite tokens JWT y registra el refresh token hasheado para
+permitir renovaciones controladas.
+"""
+
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -22,6 +28,7 @@ async def login(
     data: LoginRequest,
     db: Session = Depends(get_db)
 ):
+    """Autentica un usuario por documento y contrasena."""
 
     # Buscar usuario
     user = db.query(User).filter(

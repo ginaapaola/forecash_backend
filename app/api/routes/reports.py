@@ -1,3 +1,5 @@
+"""Endpoints para generacion y descarga de reportes PDF."""
+
 from datetime import date
 
 from fastapi import APIRouter, Depends, Response
@@ -20,6 +22,7 @@ def descargar_reporte(
     company: dict = Depends(get_company),
     user: User = Depends(get_current_user)
 ):
+    """Genera un reporte financiero general en PDF para la empresa activa."""
     company_id = company["company"].id
     company_name = company["company"].legal_name
     pdf = generar_reporte_pdf(
@@ -44,6 +47,7 @@ def descargar_reporte_productos(
     company: dict = Depends(get_company),
     user: User = Depends(get_current_user)
 ):
+    """Genera un reporte PDF con resumen de productos del periodo."""
     company_id = company["company"].id
     company_name = company["company"].legal_name
     pdf = generar_reporte_productos(
@@ -70,6 +74,7 @@ def descargar_reporte_evolucion_producto(
     company: dict = Depends(get_company),
     user: User = Depends(get_current_user)
 ):
+    """Genera un reporte PDF de evolucion para un producto especifico."""
     company_id = company["company"].id
     company_name = company["company"].legal_name
     pdf = generar_reporte_producto_pdf(

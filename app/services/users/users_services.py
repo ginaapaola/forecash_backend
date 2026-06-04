@@ -1,3 +1,9 @@
+"""Servicios de negocio para usuarios.
+
+Gestiona consultas de perfiles, cambios de contrasena, actualizaciones simples,
+creacion de usuarios por empresa y desactivacion de cuentas.
+"""
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
@@ -15,9 +21,11 @@ from app.schemas.response_schema.user_response import UserResponse
 
 
 class UsersService:
+    """Agrupa operaciones de lectura y administracion de usuarios."""
 
     @staticmethod
     def get_all_users(db:Session):
+        """Lista todos los usuarios registrados."""
         users = db.query(User).all()
 
         if users is None:
@@ -33,6 +41,7 @@ class UsersService:
     
     @staticmethod
     def get_user_id(db:Session, user_id):
+        """Obtiene un usuario especifico por ID."""
         user = db.query(User).filter(User.id == user_id).first()
 
         if user is None: 
@@ -44,6 +53,7 @@ class UsersService:
 
     @staticmethod
     def get_user_profile(db, user_id):
+        """Construye el perfil del usuario con sus empresas asociadas."""
         user = (
             db.query(User)
             .options(
@@ -101,6 +111,7 @@ class UsersService:
     
     @staticmethod
     def update_user_password(db: Session, user_id, data:ChangePasswordRequest):
+        """Cambia la contrasena validando la contrasena actual."""
         user = db.query(User).filter(User.id == user_id).first()
 
         if not user:
@@ -138,6 +149,7 @@ class UsersService:
     
     @staticmethod
     def update_user(db: Session, user_id, data: UserRequestUpdate):
+        """Actualiza campos editables del usuario."""
         user = db.query(User).filter(User.id == user_id).first()
 
         if user is None:
@@ -161,6 +173,7 @@ class UsersService:
     
     @staticmethod
     def create_user_for_company(db: Session, company_id, data: CreateUserRequest, user_id):
+        """Crea o vincula un usuario a una empresa desde el representante legal."""
 
         # Verificar que la empresa exista
         company = db.query(Company).filter(Company.id == company_id).first()
@@ -257,6 +270,7 @@ class UsersService:
     
     @staticmethod
     def deactivate_user(db: Session, user_id):
+        """Marca una cuenta de usuario como inactiva."""
 
         existing_user = db.query(User).filter(User.id == user_id).first()
 

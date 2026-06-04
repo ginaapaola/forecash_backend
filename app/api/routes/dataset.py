@@ -1,3 +1,9 @@
+"""Endpoints para carga y procesamiento de datasets.
+
+Recibe archivos CSV/XLSX asociados a la empresa seleccionada y delega la
+validacion, persistencia y ETL al servicio de datasets.
+"""
+
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from sqlalchemy.orm import Session
@@ -20,5 +26,6 @@ async def upload_dataset(
     user: User = Depends(get_current_user)
 
 ):
+    """Procesa un archivo subido para la empresa activa del usuario."""
     company_id = company["company"].id
     return await DatasetService.process_file(file, db, company_id, user.id)

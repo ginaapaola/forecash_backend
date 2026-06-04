@@ -1,3 +1,5 @@
+"""Dependencia para validar JWT bearer y exponer su payload."""
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -8,6 +10,7 @@ security = HTTPBearer()
 def get_token_payload(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
+    """Decodifica el token de autorizacion y valida que tenga sujeto."""
     token = credentials.credentials
 
     try:

@@ -1,3 +1,9 @@
+"""Servicios de generacion de reportes PDF.
+
+Renderiza plantillas HTML con datos financieros, construye graficos con
+matplotlib y convierte el resultado a PDF con WeasyPrint.
+"""
+
 import base64
 from datetime import date
 import io
@@ -31,6 +37,7 @@ def generar_reporte_pdf(
         fecha_inicio: date,
         fecha_fin: date
 ) -> bytes:
+    """Genera el reporte financiero general de una empresa."""
     
     # Obtener datos 
     datos = calculate_metrics_by_period(db, company_id, fecha_inicio, fecha_fin)
@@ -77,6 +84,7 @@ def generar_reporte_pdf(
     return HTML(string=html_renderizado, base_url=TEMPLATES_DIR).write_pdf()
 
 def _generar_insights(kpis: dict, insights: dict, chart_data: list) -> list:
+    """Construye textos de interpretacion a partir de KPIs y tendencias."""
     textos = []
 
     #Margen 
@@ -170,6 +178,7 @@ def generar_reporte_productos(
         fecha_inicio: date,
         fecha_fin: date
 ) -> bytes: 
+    """Genera un PDF con la tabla de productos del periodo."""
     
     productos = calculate_metrics_by_period(db, company_id, fecha_inicio, fecha_fin)
 
@@ -189,6 +198,7 @@ def generar_reporte_productos(
     return HTML(string=html_renderizado, base_url=TEMPLATES_DIR).write_pdf()
 
 def _grafico_area_ventas(chart_data: list) -> str:
+    """Genera un grafico de area para la tendencia de ventas."""
 
     periodos = [d["period"] for d in chart_data]
     ventas = [d.get("ventas", 0) for d in chart_data]
@@ -282,6 +292,7 @@ def generar_reporte_producto_pdf(
     fecha_inicio: date,
     fecha_fin: date
 ) -> bytes:
+    """Genera un PDF con evolucion, KPIs y registros de un producto."""
 
     # 1. Obtener evolución del producto
     evolucion = get_product_evolution(db, company_id, product_id, fecha_inicio, fecha_fin)
@@ -347,6 +358,7 @@ def generar_reporte_producto_pdf(
 
 
 def _grafico_evolucion_producto(chart_data: list, nombre_producto: str) -> str:
+    """Genera un grafico comparativo de ventas, compras y utilidad."""
     periodos = [d["period"] for d in chart_data]
     ventas = [d.get("ventas", 0) for d in chart_data]
     utilidad = [d.get("utilidad", 0) for d in chart_data]

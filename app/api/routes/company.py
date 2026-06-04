@@ -1,3 +1,9 @@
+"""Endpoints de empresas, dashboard y metricas.
+
+Centraliza operaciones sobre empresas: seleccion, consulta, configuracion
+tributaria, usuarios asociados, datasets y metricas del tablero financiero.
+"""
+
 from datetime import date
 from typing import List
 
@@ -41,6 +47,7 @@ def post_user_company(
     db: Session = Depends(get_db),
     user: User = Depends(require_role(CompanyRole.LEGAL_REPRESENTATIVE))
 ):
+    """Crea o asocia un usuario dentro de una empresa existente."""
     return UsersService.create_user_for_company(db, company_id, data, user.id)
 
 @router.post(
@@ -52,6 +59,7 @@ def select_company(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    """Selecciona una empresa del usuario y devuelve su rol en ella."""
     return CompanyService.select_company(db, data, user.id)
 
 
@@ -69,6 +77,7 @@ def get_companies(
     db:Session = Depends(get_db),
     user: User = Depends(require_super_admin)
 ): 
+    """Lista todas las empresas registradas para administradores."""
     return CompanyService.get_companies(db)
 
 
@@ -80,6 +89,7 @@ def get_metrics_by_period(
     company: dict = Depends(get_company),
     user: User = Depends(get_current_user)
 ):
+    """Calcula KPIs y series del dashboard para un rango de fechas."""
     company_id = company["company"].id
     return calculate_metrics_by_period(
         db, company_id, fecha_inicio, fecha_fin
@@ -94,6 +104,7 @@ def get_breakdown(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    """Obtiene la distribucion de una operacion financiera por periodo."""
     company_id = company["company"].id
     return get_operation_breakdown(
         db,
@@ -112,6 +123,7 @@ def get_products_by_categories(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    """Lista productos vendidos dentro de una categoria y rango de fechas."""
     company_id = company["company"].id
     return get_categories_breakdown(
         db,
@@ -130,6 +142,7 @@ def get_product_payload_category(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    """Devuelve registros crudos asociados a un producto vendido."""
     company_id = company["company"].id
     return get_products_record(
         db,
@@ -148,6 +161,7 @@ def get_evolution_product(
     company: dict = Depends(get_company),
     user: User = Depends(get_current_user)   
 ): 
+    """Calcula la evolucion historica de ventas, compras y utilidad de un producto."""
     company_id = company["company"].id
     return get_product_evolution(db, company_id, product, start, end)
 
@@ -161,6 +175,7 @@ def expense_evolution(
     user: User = Depends(get_current_user)   
 
 ):
+    """Calcula la evolucion de un gasto especifico en un periodo."""
     company_id = company["company"].id
     return get_expense_evolution(
         db=db,
@@ -179,6 +194,7 @@ def get_datasets_by_company(
     company: dict = Depends(get_company),
     db: Session = Depends(get_db)
 ):
+    """Lista datasets cargados para la empresa activa."""
     company_id = company["company"].id
     return CompanyService.get_datasets(db, company_id)
 
@@ -198,6 +214,7 @@ def get_company_id(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
+    """Consulta informacion detallada de una empresa por ID."""
     return CompanyService.get_company_id(db, company_id)
 
 @router.patch(
@@ -215,6 +232,7 @@ def update_tax_config(
     company_data: dict = Depends(get_company),
     db: Session = Depends(get_db)
 ):
+    """Actualiza la configuracion tributaria de la empresa activa."""
     return CompanyService.update_tax_config(db, company_data, data)
 
 @router.delete(
@@ -227,5 +245,6 @@ def delete_dataset(
     company: dict = Depends(get_company),
     db: Session = Depends(get_db)
 ):
+    """Elimina un dataset de la empresa activa."""
     company_id = company["company"].id
     CompanyService.delete_dataset(db, company_id, dataset_id)

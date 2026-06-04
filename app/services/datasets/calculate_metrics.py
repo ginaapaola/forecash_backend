@@ -1,3 +1,9 @@
+"""Consultas agregadas para metricas y tableros financieros.
+
+Calcula KPIs, series temporales, distribuciones, evolucion de productos,
+categorias y gastos a partir del modelo dimensional de operaciones.
+"""
+
 from datetime import date
 
 from fastapi import HTTPException
@@ -33,6 +39,7 @@ amount_expr = func.coalesce(
 
 
 def _get_time_series(db, company_id, fecha_inicio, fecha_fin, operation_type=None):
+    """Construye una serie temporal con granularidad dinamica por rango."""
 
     delta = (fecha_fin - fecha_inicio).days
 
@@ -97,6 +104,7 @@ def calculate_metrics_by_period(
     fecha_inicio: date,
     fecha_fin: date,
     ) -> dict:
+    """Calcula KPIs, insights y datos de graficas para un periodo."""
 
     from sqlalchemy import func
 
@@ -443,6 +451,7 @@ def get_operation_breakdown(
     fecha_inicio: date,
     fecha_fin: date,
 ):
+    """Obtiene distribucion y metodos de pago para un tipo de operacion."""
     distribution = db.query(
         func.coalesce(DimProduct.name, DimCategory.name, FactOperation.concept).label("name"),
         func.sum(amount_expr).label("total"),
@@ -520,6 +529,7 @@ def get_utility_per_unit(
     fecha_inicio: date,
     fecha_fin: date,
 ):
+    """Calcula utilidad por unidad con precio de venta y costo promedio."""
     group_key = func.coalesce(
         cast(FactOperation.dim_product_id, String),
         func.nullif(FactOperation.concept, "")
@@ -612,6 +622,7 @@ def get_categories_breakdown(
     fecha_inicio: date,
     fecha_fin: date
 ):
+    """Lista productos vendidos dentro de una categoria en un periodo."""
     products = db.query(
         DimProduct.id.label("id"),
         DimProduct.name.label("name"),
@@ -650,6 +661,7 @@ def get_products_record(
       fecha_inicio: date,
       fecha_fin: date
 ):
+    """Devuelve payloads crudos de operaciones asociadas a un producto."""
     raw_record_product = db.query(
         RawRecord.id.label("id"),
         RawRecord.row_payload.label("payload")
@@ -686,6 +698,7 @@ def get_product_evolution(
     fecha_inicio: date,
     fecha_fin: date,
 ) -> dict:
+    """Calcula evolucion de ventas, compras y utilidad de un producto."""
 
     delta = (fecha_fin - fecha_inicio).days
 
@@ -797,6 +810,7 @@ def get_all_expenses(
     fecha_inicio: date,
     fecha_fin: date
 ) -> dict:
+    """Agrega todos los gastos por concepto dentro de un periodo."""
     rows = (
         db.query(
             FactOperation.concept.label("gasto"),
@@ -831,6 +845,7 @@ def get_expense_evolution(
     fecha_inicio: date,
     fecha_fin: date,
 ) -> dict:
+    """Calcula la evolucion temporal de un concepto de gasto."""
 
     delta = (fecha_fin - fecha_inicio).days
 

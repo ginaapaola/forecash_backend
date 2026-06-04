@@ -1,3 +1,10 @@
+"""Servicios para el flujo de solicitudes de registro.
+
+Valida datos enviados por empresas, gestiona archivos de soporte en Firebase,
+aprueba solicitudes creando empresas y usuarios, y programa correos de
+activacion.
+"""
+
 from typing import List
 import uuid
 
@@ -19,6 +26,7 @@ from app.schemas.request_schema.register_request import CompanyRequestCreate, Re
 from app.services.email.email_service import EmailService
 
 class RequestsServices:
+    """Agrupa operaciones del ciclo de vida de solicitudes de registro."""
 
     MAX_SIZE = 10 * 1024 * 1024
     ALLOWED_TYPES = [
@@ -34,6 +42,7 @@ class RequestsServices:
         data: dict,
         files: List[UploadFile] = None
     ):
+        """Crea una solicitud y sube archivos adjuntos permitidos."""
         try:
             data["usuarios_json"] = json.loads(
                 data.get("usuarios_json", [])
@@ -97,6 +106,7 @@ class RequestsServices:
     
     @staticmethod
     def get_request_id(db: Session, request_id): 
+        """Obtiene una solicitud de registro por ID."""
         request = db.query(RegisterRequest).filter(RegisterRequest.id == request_id).first()
         
         if request is None:
@@ -109,6 +119,7 @@ class RequestsServices:
     
     @staticmethod
     def get_all_requests(db: Session):
+        """Lista todas las solicitudes de registro, mas recientes primero."""
         requests= db.query(RegisterRequest).order_by(desc(RegisterRequest.created_at)).all()
 
         if requests is None: 
@@ -124,6 +135,7 @@ class RequestsServices:
     
     @staticmethod
     def reject_request(db: Session, request_id, data: RegisterRequestUpdate):
+        """Rechaza una solicitud y registra el motivo correspondiente."""
 
         request = db.query(RegisterRequest).filter(RegisterRequest.id == request_id).first()
 
@@ -154,6 +166,7 @@ class RequestsServices:
     
     @staticmethod
     def approved_request(db: Session, request_id, background_task: BackgroundTasks):
+        """Aprueba una solicitud creando empresa, usuarios y emails de activacion."""
 
         request = db.query(RegisterRequest).filter(RegisterRequest.id == request_id).first()
 

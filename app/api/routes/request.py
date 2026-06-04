@@ -1,3 +1,9 @@
+"""Endpoints para solicitudes de registro de empresas.
+
+Permite crear solicitudes con archivos de soporte y administrarlas desde el rol
+super administrador hasta su aprobacion o rechazo.
+"""
+
 from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
@@ -35,6 +41,7 @@ def create_register_request(
     files: List[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
+    """Crea una solicitud de registro de empresa con datos y adjuntos."""
     data = {
         "rep_name": rep_name,
         "rep_email": rep_email,
@@ -70,6 +77,7 @@ def get_request(
     current_user: User = Depends(require_super_admin),
     db: Session = Depends(get_db)
 ):
+    """Obtiene una solicitud de registro por ID."""
     return RequestsServices.get_request_id(db, request_id)
 
 #ENDPOINT PARA OBTENER UNA LISTA DE SOLICITUDES
@@ -86,6 +94,7 @@ def get_requests(
     current_user: User = Depends(require_super_admin),
     db: Session = Depends(get_db)
 ):
+    """Lista solicitudes de registro ordenadas por fecha de creacion."""
     return RequestsServices.get_all_requests(db)
 
 @router.put(
@@ -104,6 +113,7 @@ def reject_request(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_super_admin),
 ):
+    """Rechaza una solicitud de registro y conserva el motivo."""
     return RequestsServices.reject_request(db, request_id, data)
 
 @router.put(
@@ -122,4 +132,5 @@ def approve_request(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_super_admin)
 ):
+    """Aprueba una solicitud y crea empresa, usuarios y tareas de email."""
     return RequestsServices.approved_request(db, request_id, background_task)

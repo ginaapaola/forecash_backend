@@ -1,3 +1,10 @@
+"""Servicios para carga, validacion y persistencia de datasets.
+
+Incluye lectura de archivos CSV/XLSX, inferencia de columnas, validacion de
+campos requeridos, deteccion del tipo de operacion y guardado de registros
+crudos para el proceso ETL.
+"""
+
 import pandas as pd
 import io
 import numpy as np
@@ -12,9 +19,11 @@ from app.services.datasets.run_etl import run_etl
 from app.services.datasets.mapping.mapping_service import MappingService
 
 class DatasetService:
+    """Orquesta el ciclo de vida inicial de datasets cargados por usuarios."""
 
     @staticmethod
     def _sanitize_for_json(obj):
+        """Convierte valores de pandas/numpy a tipos serializables en JSON."""
         if isinstance(obj, dict):
             return {k: DatasetService._sanitize_for_json(v) for k, v in obj.items()}
         elif isinstance(obj, list):
@@ -38,6 +47,7 @@ class DatasetService:
             company_id: int,
             uploaded_by: int
         ):
+        """Lee, valida, guarda y procesa un archivo de dataset."""
 
         contents = await file.read()
 
@@ -102,6 +112,7 @@ class DatasetService:
 
     @staticmethod
     def validate_dataframe(df: pd.DataFrame) -> dict:
+        """Valida estructura minima, tipos y resumen operativo de un DataFrame."""
 
         REQUIRED_COLUMNS = { "fecha" , "valor_total"}  
         VALID_OPERATIONS = {"venta", "compra", "costo"}
@@ -228,6 +239,7 @@ class DatasetService:
     
     @staticmethod
     def _detect_operation_type(df: pd.DataFrame) -> OperationTypeDataset:
+        """Detecta si el dataset representa ventas, compras, gastos o mezcla."""
         
         # CASO 1: existe tipo_operacion → usar lógica actual
         if "tipo_operacion" in df.columns:
@@ -248,6 +260,7 @@ class DatasetService:
 
     @staticmethod
     def _detect_operation_type_from_columns(df: pd.DataFrame):
+        """Infiere el tipo de operacion a partir de nombres de columnas."""
         columns = set(df.columns)
 
         scores = {
@@ -290,6 +303,7 @@ class DatasetService:
         company_id: int, 
         uploaded_by: int
     ) -> RawDataset:
+        """Persiste metadata del dataset y sus filas originales."""
         
         operation_type = DatasetService._detect_operation_type(df)
 

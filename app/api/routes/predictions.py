@@ -1,3 +1,9 @@
+"""Endpoints de prediccion financiera.
+
+Genera pronosticos por variable financiera usando las series historicas de la
+empresa seleccionada y el horizonte solicitado.
+"""
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -38,6 +44,7 @@ def generate_predictions(
     db: Session = Depends(get_db),
     company: dict = Depends(get_company)
 ):
+    """Genera predicciones para ventas, compras y gastos disponibles."""
 
     company_id = company["company"].id
 

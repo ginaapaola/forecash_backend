@@ -1,3 +1,9 @@
+"""Servicio de pronosticos financieros.
+
+Construye series mensuales por tipo de operacion, entrena modelos ARIMA y
+formatea respuestas historicas y futuras para el frontend.
+"""
+
 from datetime import date, timedelta
 
 import pandas as pd
@@ -51,6 +57,7 @@ def get_monthly_series(
     operation_type: OperationType,
     months: int = 12,
 ):
+    """Consulta totales mensuales historicos de una empresa y operacion."""
     today = date.today()
 
     current_period = today.year * 100 + today.month
@@ -84,6 +91,7 @@ def get_monthly_series(
 
 
 def build_monthly_series(rows: list) -> pd.Series:
+    """Convierte filas mensuales de base de datos en una serie pandas completa."""
 
     if not rows:
         raise ValueError("No hay datos mensuales.")
@@ -141,6 +149,7 @@ def train_arima_model(
     series: pd.Series,
     seasonal: bool,
 ):
+    """Entrena un modelo ARIMA automatico sobre la serie recibida."""
 
     try:
 
@@ -192,6 +201,7 @@ def build_forecast_response(
     forecast_periods: int,
     frequency: str,
 ):
+    """Construye la respuesta con historico, pronostico e intervalos."""
 
     forecast_values, conf_int = model.predict(
         n_periods=forecast_periods,
@@ -283,6 +293,7 @@ def generate_forecast(
     operation_type: OperationType,
     horizon: str,
 ):
+    """Ejecuta el flujo completo de pronostico para un horizonte dado."""
     config = HORIZON_CONFIG[horizon]
 
     rows = get_monthly_series(

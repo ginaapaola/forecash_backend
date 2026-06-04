@@ -1,3 +1,9 @@
+"""Endpoints de autenticacion.
+
+Expone inicio de sesion, renovacion de tokens y consulta del perfil codificado
+en el token JWT actual.
+"""
+
 from fastapi import APIRouter, Body, Depends
 from sqlalchemy.orm import Session
 
@@ -17,6 +23,7 @@ async def token(
     token_req: RefreshRequest,
     db: Session = Depends(get_db)
 ):
+    """Renueva el access token a partir de un refresh token valido."""
     return await refresh_token(token_req, db)
 
 # LOGUEO 
@@ -38,8 +45,10 @@ async def authenticate_user(
     ),
     db: Session = Depends(get_db)
 ): 
+    """Autentica credenciales y entrega tokens de acceso y refresco."""
     return await login(login_request, db)
 
 @router.get("/profile")
 def get_profile(current_user: dict = Depends(get_token_payload)):
+    """Devuelve el payload del token autenticado."""
     return current_user

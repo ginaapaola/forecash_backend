@@ -1,3 +1,5 @@
+"""Endpoints de administracion y perfil de usuarios."""
+
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -31,6 +33,7 @@ def get_user_profile(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Devuelve el perfil completo del usuario autenticado."""
     return UsersService.get_user_profile(db, user.id)
 
 @router.get(
@@ -47,6 +50,7 @@ def get_user_id(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_super_admin),
 ):
+    """Obtiene un usuario por ID para administradores."""
     return UsersService.get_user_id(db, user_id)
 
 @router.get(
@@ -63,6 +67,7 @@ def get_users(
     current_user: User = Depends(require_super_admin),
     db: Session = Depends(get_db)
 ): 
+    """Lista todos los usuarios registrados."""
     return UsersService.get_all_users(db)
 
 @router.put(
@@ -78,6 +83,7 @@ def change_password(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ): 
+    """Actualiza la contrasena del usuario autenticado."""
     return UsersService.update_user_password(db, current_user.id, data)
 
 @router.put(
@@ -93,6 +99,7 @@ def update_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    """Actualiza datos editables del usuario autenticado."""
     return UsersService.update_user(db, current_user.id, data)
 
 @router.patch(
@@ -107,4 +114,5 @@ def deactivated_user(
     user_id: int,
     db: Session = Depends(get_db)
 ):
+    """Desactiva una cuenta de usuario por ID."""
     return UsersService.deactivate_user(db, user_id)

@@ -1,3 +1,5 @@
+"""Dependencia para resolver la empresa activa del request."""
+
 from fastapi import Depends, HTTPException, Header, status
 from sqlalchemy.orm import Session
 
@@ -11,6 +13,7 @@ def get_company(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
+    """Valida el header X-Company-Id y la pertenencia del usuario."""
 
     relation = (
         db.query(UserCompany)
