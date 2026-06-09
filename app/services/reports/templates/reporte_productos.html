@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm 2cm 2cm 2cm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #1e293b;
+        }
+
+        /* ── ENCABEZADO ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1e40af;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header .brand {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1e40af;
+            letter-spacing: -0.5px;
+        }
+
+        .header .brand span {
+            color: #06b6d4;
+        }
+
+        .header .meta {
+            text-align: right;
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .header .meta strong {
+            color: #1e293b;
+            font-size: 12px;
+        }
+
+
+        /* ── TABLA ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+
+        thead tr {
+            background-color: #1e40af;
+        }
+
+        th {
+            color: white;
+            padding: 7px 8px;
+            text-align: left;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 10px;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-green {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .text-red {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        /* ── PIE ── */
+        .footer {
+            position: fixed;
+            bottom: 0.8cm;
+            left: 2cm;
+            right: 2cm;
+            font-size: 9px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 5px;
+        }
+    </style>
+    <title>Productos</title>
+</head>
+
+<body>
+    <div class="header">
+        <!-- <div class="brand">Fore<span>cash</span></div> -->
+        <img src="../assets/forecash_text_right.png" alt="forecash_logo" style="height:40px;">
+        <div class="meta">
+            <strong>{{ empresa }}</strong><br>
+            Período: {{ fecha_inicio }} — {{ fecha_fin }}<br>
+            Generado por: {{ usuario }}
+        </div>
+    </div>
+
+    {% if productos %}
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="text-right">Precio Venta</th>
+                <th class="text-right">Costo Prom.</th>
+                <th class="text-right">Cantidad</th>
+                <th class="text-right">Total Ventas</th>
+                <th class="text-right">Utilidad</th>
+                <th class="text-right">Margen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td class="text-right">${{ "{:,.0f}".format(p.avg_sale_price) }}</td>
+                <td class="text-right">${{ "{:,.0f}".format(p.avg_cost) }}</td>
+                <td class="text-right">{{ "{:,.0f}".format(p.quantity_sold) }}</td>
+                <td class="text-right">${{ "{:,.0f}".format(p.total_ventas) }}</td>
+                <td class="text-right {% if p.total_utilidad >= 0 %}text-green{% else %}text-red{% endif %}">
+                    ${{ "{:,.0f}".format(p.total_utilidad) }}
+                </td>
+                <td class="text-right">
+                    {{ "{:.2f}".format(0 if p.margin_pct < 0 else p.margin_pct) }}% </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+</body>
+
+</html>
