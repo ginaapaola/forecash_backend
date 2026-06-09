@@ -143,6 +143,17 @@ class DatasetService:
 
         if missing:
             errors.append(f"Faltan columnas obligatorias: {', '.join(sorted(missing))}")
+            return {
+                "is_valid": False,
+                "errors": errors,
+                "warnings": warnings,
+                "detected_types": detected_types,
+                "summary": {
+                    "total_rows": total_rows,
+                    "total_columns": len(df.columns),
+                    "operations_found": {},
+                },
+            }
 
         # ── 4. Tipos de datos ────────────────────────────────
         for col in df.columns:
